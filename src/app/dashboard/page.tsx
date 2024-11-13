@@ -6,7 +6,7 @@ import { database } from "../../config/firebaseConfig";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react"; // Ícone de logout e seta
 import Link from "next/link"; // Importa o Link para navegação
 
 const AdminDashboard = () => {
@@ -96,13 +96,15 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      {/* Cabeçalho com opções de Logout e Home */}
-      <header className="flex justify-between w-full max-w-md mb-4">
+      {/* Cabeçalho com fundo e opções de Logout e Home */}
+      <header className="flex justify-between w-full max-w-md mb-4 p-4 bg-gray-800 text-white rounded-lg">
         <Link href="/" passHref>
-          <Button variant="ghost">Home</Button>
+          <Button variant="ghost" className="text-lg text-white">
+            Home
+          </Button>
         </Link>
-        <Button variant="ghost" onClick={() => {/* Função de logout aqui */}}>
-          Logout
+        <Button variant="ghost" className="text-lg text-red-500 flex items-center" onClick={() => {/* Função de logout aqui */}}>
+          <LogOut className="mr-1" /> Logout
         </Button>
       </header>
 
