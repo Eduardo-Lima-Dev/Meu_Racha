@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // Certifique-se de importar do "next/navigation"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { app } from "../../config/firebaseConfig";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,16 @@ const AdminLogin = () => {
   const [erro, setErro] = useState("");
   const auth = getAuth(app);
   const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push("/dashboard");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
