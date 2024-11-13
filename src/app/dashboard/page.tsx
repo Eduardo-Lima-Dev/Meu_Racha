@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { ref, push, update, onValue, remove } from "firebase/database";
-import { database } from "../../config/firebaseConfig";
+import { getAuth, signOut } from "firebase/auth";
+import { database, app } from "../../config/firebaseConfig";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { ChevronDown, LogOut } from "lucide-react"; // Ícone de logout e seta
-import Link from "next/link"; // Importa o Link para navegação
+import { ChevronDown, LogOut } from "lucide-react";
+import Link from "next/link";
 
 const AdminDashboard = () => {
   const [nome, setNome] = useState("");
   const [assistencias, setAssistencias] = useState(0);
   const [gols, setGols] = useState(0);
   const [mensagem, setMensagem] = useState("");
+  const [votacaoLiberada, setVotacaoLiberada] = useState(false);
   const [jogadores, setJogadores] = useState<
     {
       id: string;
@@ -26,8 +28,12 @@ const AdminDashboard = () => {
   const [editStats, setEditStats] = useState<{ [key: string]: boolean }>({});
   const [modifiedJogadores, setModifiedJogadores] = useState<{ [key: string]: { assistencias: number; gols: number } }>({});
 
+  const auth = getAuth(app);
+
   useEffect(() => {
     const jogadoresRef = ref(database, "jogadores");
+    const authRef = ref(database, "auth_votos/liberado");
+
     onValue(jogadoresRef, (snapshot) => {
       const data = snapshot.val();
       const jogadoresList = data
@@ -35,7 +41,30 @@ const AdminDashboard = () => {
         : [];
       setJogadores(jogadoresList);
     });
+
+    onValue(authRef, (snapshot) => {
+      setVotacaoLiberada(snapshot.val());
+    });
   }, []);
+
+  const handleToggleVotacao = async () => {
+    try {
+      await update(ref(database, "auth_votos"), { liberado: !votacaoLiberada });
+      setVotacaoLiberada(!votacaoLiberada);
+    } catch (error) {
+      console.error("Erro ao atualizar status de votação:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("Usuário deslogado com sucesso!");
+      })
+      .catch((error) => {
+        console.error("Erro ao deslogar:", error);
+      });
+  };
 
   const handleAddJogador = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,10 +132,23 @@ const AdminDashboard = () => {
             Home
           </Button>
         </Link>
-        <Button variant="ghost" className="text-lg text-red-500 flex items-center" onClick={() => {/* Função de logout aqui */}}>
+        <Button variant="ghost" className="text-lg text-red-500 flex items-center" onClick={handleLogout}>
           <LogOut className="mr-1" /> Logout
         </Button>
       </header>
+
+      {/* Controle de Liberação de Votação */}
+      <Card className="w-full max-w-md mb-8">
+        <CardHeader>
+          <CardTitle>Controle de Votação</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="mb-4">Status atual: {votacaoLiberada ? "Liberada" : "Bloqueada"}</p>
+          <Button onClick={handleToggleVotacao} className="w-full bg-blue-500 text-white">
+            {votacaoLiberada ? "Bloquear Votação" : "Liberar Votação"}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card className="w-full max-w-md mb-8">
         <CardHeader>

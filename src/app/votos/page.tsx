@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ref, get, child, update } from "firebase/database";
+import { ref, get, update } from "firebase/database";
+import { useRouter } from "next/navigation";
 import { database } from "../../config/firebaseConfig";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import Modal from "./auth_votos/modal";
 
 interface Jogador {
   id: string;
@@ -19,27 +21,50 @@ interface Jogador {
 const Votacao = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
   const [votos, setVotos] = useState<{ [key: string]: number }>({});
+  const [votacaoLiberada, setVotacaoLiberada] = useState<boolean | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchJogadores = async () => {
-      const dbRef = ref(database);
+    const fetchConfiguracoes = async () => {
+      const dbRef = ref(database, "auth_votos/liberado");
       try {
-        const snapshot = await get(child(dbRef, "jogadores"));
+        const snapshot = await get(dbRef);
         if (snapshot.exists()) {
-          const data = snapshot.val();
-          const listaJogadores = Object.keys(data).map((key) => ({
-            id: key,
-            ...data[key],
-          }));
-          setJogadores(listaJogadores);
+          setVotacaoLiberada(snapshot.val());
+        } else {
+          setVotacaoLiberada(false);
         }
       } catch (error) {
-        console.error("Erro ao buscar jogadores:", error);
+        console.error("Erro ao buscar configurações:", error);
+        setVotacaoLiberada(false);
       }
     };
 
-    fetchJogadores();
+    fetchConfiguracoes();
   }, []);
+
+  useEffect(() => {
+    if (votacaoLiberada) {
+      const fetchJogadores = async () => {
+        const dbRef = ref(database, "jogadores");
+        try {
+          const snapshot = await get(dbRef);
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            const listaJogadores = Object.keys(data).map((key) => ({
+              id: key,
+              ...data[key],
+            }));
+            setJogadores(listaJogadores);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar jogadores:", error);
+        }
+      };
+
+      fetchJogadores();
+    }
+  }, [votacaoLiberada]);
 
   const handleVoteChange = (jogadorId: string, voto: number) => {
     setVotos((prevVotos) => ({
@@ -64,6 +89,21 @@ const Votacao = () => {
       console.error("Erro ao registrar votos:", error);
     }
   };
+
+  const handleCloseModal = () => {
+    router.push("/");
+  };
+
+  if (votacaoLiberada === false) {
+    return (
+      <Modal
+        title="Votação Não Liberada"
+        message="A votação não está disponível no momento."
+        icon="alert"
+        onClose={handleCloseModal}
+      />
+    );
+  }
 
   return (
     <div className="container mx-auto p-4">
