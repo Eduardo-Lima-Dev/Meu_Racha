@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ChevronDown, LogOut } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const AdminDashboard = () => {
   const [nome, setNome] = useState("");
@@ -29,6 +30,7 @@ const AdminDashboard = () => {
   const [modifiedJogadores, setModifiedJogadores] = useState<{ [key: string]: { assistencias: number; gols: number } }>({});
 
   const auth = getAuth(app);
+  const router = useRouter();
 
   useEffect(() => {
     const jogadoresRef = ref(database, "jogadores");
@@ -60,6 +62,7 @@ const AdminDashboard = () => {
     signOut(auth)
       .then(() => {
         console.log("Usuário deslogado com sucesso!");
+        router.push("/admin"); 
       })
       .catch((error) => {
         console.error("Erro ao deslogar:", error);
