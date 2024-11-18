@@ -90,43 +90,6 @@ const Votacao = () => {
     }));
   };
 
-  // const handleSubmit = async () => {
-  //   if (Object.keys(votos).length !== jogadores.length) {
-  //     setErro("Por favor, vote em todos os jogadores antes de enviar.");
-  //     return;
-  //   }
-
-  //   try {
-  //     // Verifica se o usuário já votou
-  //     for (const jogador of jogadores) {
-  //       if (jogador.votos.some((voto) => voto.userId === user?.uid)) {
-  //         setErro("Você já votou. Não é possível votar novamente.");
-  //         return;
-  //       }
-  //     }
-
-  //     // Atualiza os votos no banco de dados
-  //     const updates: { [key: string]: { userId: string; vote: number }[] } = {};
-  //     Object.keys(votos).forEach((jogadorId) => {
-  //       const jogador = jogadores.find((j) => j.id === jogadorId);
-  //       if (jogador) {
-  //         const novosVotos = jogador.votos
-  //           ? [...jogador.votos, { userId: user!.uid, vote: votos[jogadorId] }]
-  //           : [{ userId: user!.uid, vote: votos[jogadorId] }];
-  //         updates[`/jogadores/${jogadorId}/votos`] = novosVotos as { userId: string; vote: number }[];
-  //       }
-  //     });
-
-  //     await update(ref(database), updates);
-
-  //     // Exibir modal de sucesso e redirecionar para home
-  //     setModalVisible(true);
-  //   } catch (error) {
-  //     console.error("Erro ao registrar votos:", error);
-  //     setErro("Erro ao registrar votos. Tente novamente.");
-  //   }
-  // };
-
   const handleSubmit = async () => {
     if (Object.keys(votos).length !== jogadores.length) {
       setErro("Por favor, vote em todos os jogadores antes de enviar.");
