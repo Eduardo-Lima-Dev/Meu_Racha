@@ -11,6 +11,14 @@ import { ChevronDown, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+// type Jogador = {
+//   id: string;
+//   nome: string;
+//   assistencias: number;
+//   gols: number;
+//   votos: { userId: string; vote: number }[];
+// };
+
 const AdminDashboard = () => {
   const [nome, setNome] = useState("");
   const [assistencias, setAssistencias] = useState(0);
@@ -131,17 +139,18 @@ const AdminDashboard = () => {
 
   const handleClearStars = async () => {
     try {
-      const updates: { [key: string]: { votos: [] } } = {};
+      const updates: { [key: string]: { votos: { userId: string; vote: number }[] } } = {};
       jogadores.forEach((jogador) => {
-        updates[`jogadores/${jogador.id}`] = { votos: [] };
+        updates[`jogadores/${jogador.id}/votos`] = { votos: [] }; // Atualiza apenas o campo 'votos'
       });
       await update(ref(database), updates);
-      setMensagem("Todas as estrelas foram limpas com sucesso!");
+      setMensagem("Todas as estrelas foram zeradas com sucesso!");
     } catch (error) {
       console.error("Erro ao limpar estrelas:", error);
       setMensagem("Erro ao limpar estrelas. Tente novamente.");
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ref, get, update } from "firebase/database";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { database } from "../../config/firebaseConfig";
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
@@ -15,14 +16,29 @@ interface Jogador {
   nome: string;
   assistencias: number;
   gols: number;
-  votos: number[];
+  votos: { userId: string; vote: number }[];
 }
 
 const Votacao = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
   const [votos, setVotos] = useState<{ [key: string]: number }>({});
   const [votacaoLiberada, setVotacaoLiberada] = useState<boolean | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [user, setUser] = useState<{ uid: string } | null>(null); // Armazena o usuário logado
   const router = useRouter();
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser); // Define o usuário autenticado
+      } else {
+        router.push("/login"); // Redireciona para login se não autenticado
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   useEffect(() => {
     const fetchConfiguracoes = async () => {
@@ -74,23 +90,34 @@ const Votacao = () => {
   };
 
   const handleSubmit = async () => {
+    if (Object.keys(votos).length !== jogadores.length) {
+      alert("Por favor, vote em todos os jogadores antes de enviar.");
+      return;
+    }
+
     try {
-      const updates: { [key: string]: number[] } = {};
+      const updates: { [key: string]: { userId: string; vote: number }[] } = {};
       Object.keys(votos).forEach((jogadorId) => {
         const jogador = jogadores.find((j) => j.id === jogadorId);
         if (jogador) {
-          const novosVotos = jogador.votos ? [...jogador.votos, votos[jogadorId]] : [votos[jogadorId]];
-          updates[`/jogadores/${jogadorId}/votos`] = novosVotos;
+          const novosVotos = jogador.votos
+            ? [...jogador.votos, { userId: user?.uid, vote: votos[jogadorId] }]
+            : [{ userId: user?.uid, vote: votos[jogadorId] }];
+          updates[`/jogadores/${jogadorId}/votos`] = novosVotos as { userId: string; vote: number }[];
         }
       });
+
       await update(ref(database), updates);
-      alert("Votos registrados com sucesso!");
+
+      // Exibir modal de sucesso.
+      setModalVisible(true);
     } catch (error) {
       console.error("Erro ao registrar votos:", error);
     }
   };
 
   const handleCloseModal = () => {
+    setModalVisible(false);
     router.push("/");
   };
 
@@ -103,6 +130,10 @@ const Votacao = () => {
         onClose={handleCloseModal}
       />
     );
+  }
+
+  if (!user) {
+    return null; // Exibe nada enquanto verifica autenticação
   }
 
   return (
@@ -124,7 +155,7 @@ const Votacao = () => {
               {[1, 2, 3, 4, 5].map((value) => (
                 <div key={value} className="flex items-center space-x-2">
                   <RadioGroupItem value={String(value)} id={`r${jogador.id}-${value}`} />
-                  <Label htmlFor={`r${jogador.id}-${value}`}>{value} Estrela{value > 1 && 's'}</Label>
+                  <Label htmlFor={`r${jogador.id}-${value}`}>{value} Estrela{value > 1 && "s"}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -134,6 +165,15 @@ const Votacao = () => {
       <Button onClick={handleSubmit} className="mt-4">
         Enviar Votos
       </Button>
+
+      {modalVisible && (
+        <Modal
+          title="Votação Enviada"
+          message="Obrigado por participar da votação!"
+          icon="success"
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 };

@@ -18,9 +18,13 @@ interface Jogador {
 
 const Home = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
+  const [loading, setLoading] = useState(true); // Adicionado para mostrar carregamento
+  const [error, setError] = useState(""); // Adicionado para capturar erros
 
   useEffect(() => {
     const fetchJogadores = async () => {
+      setLoading(true); // Inicia carregamento
+      setError(""); // Limpa erros anteriores
       const dbRef = ref(database);
       try {
         const snapshot = await get(child(dbRef, "jogadores"));
@@ -31,9 +35,14 @@ const Home = () => {
             ...data[key],
           }));
           setJogadores(listaJogadores);
+        } else {
+          console.warn("Nenhum jogador encontrado no Firebase.");
         }
       } catch (error) {
         console.error("Erro ao buscar jogadores:", error);
+        setError("Erro ao carregar jogadores. Tente novamente mais tarde.");
+      } finally {
+        setLoading(false); // Finaliza carregamento
       }
     };
 
@@ -77,34 +86,40 @@ const Home = () => {
           <Link href="/admin">Ir para Administração</Link>
         </Button>
       </div>
-      {categorias.map((categoria) => (
-        <div key={categoria} className="mb-6">
-          <h2 className="text-xl font-semibold mb-2 text-center">
-            {categoria} Estrela{categoria > 1 && 's'}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
-            {jogadores
-              .filter((jogador) => Math.round(calcularMedia(jogador.votos)) === categoria)
-              .map((jogador) => (
-                <Card key={jogador.id} className="w-full max-w-xs">
-                  <CardHeader>
-                    <CardTitle className="flex justify-between items-center">
-                      {jogador.nome}
-                      {renderStars(calcularMedia(jogador.votos))}
-                    </CardTitle>
-                    <CardDescription>
-                      Média de Estrelas: {calcularMedia(jogador.votos).toFixed(2)}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Assistências: {jogador.assistencias}</p>
-                    <p>Gols: {jogador.gols}</p>
-                  </CardContent>
-                </Card>
-              ))}
+      {loading && <p className="text-center">Carregando jogadores...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+      {!loading && !error && jogadores.length === 0 && (
+        <p className="text-center">Nenhum jogador encontrado no ranking.</p>
+      )}
+      {!loading && !error &&
+        categorias.map((categoria) => (
+          <div key={categoria} className="mb-6">
+            <h2 className="text-xl font-semibold mb-2 text-center">
+              {categoria} Estrela{categoria > 1 && "s"}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
+              {jogadores
+                .filter((jogador) => Math.round(calcularMedia(jogador.votos)) === categoria)
+                .map((jogador) => (
+                  <Card key={jogador.id} className="w-full max-w-xs">
+                    <CardHeader>
+                      <CardTitle className="flex justify-between items-center">
+                        {jogador.nome}
+                        {renderStars(calcularMedia(jogador.votos))}
+                      </CardTitle>
+                      <CardDescription>
+                        Média de Estrelas: {calcularMedia(jogador.votos).toFixed(2)}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p>Assistências: {jogador.assistencias}</p>
+                      <p>Gols: {jogador.gols}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 };
