@@ -99,7 +99,7 @@ const Votacao = () => {
     try {
       // Verifica se o usuário já votou
       for (const jogador of jogadores) {
-        if (jogador.votos.some((voto) => voto.userId === user?.uid)) {
+        if (Array.isArray(jogador.votos) && jogador.votos.some((voto) => voto.userId === user?.uid)) {
           setErro("Você já votou. Não é possível votar novamente.");
           return;
         }
@@ -110,14 +110,15 @@ const Votacao = () => {
       Object.keys(votos).forEach((jogadorId) => {
         const jogador = jogadores.find((j) => j.id === jogadorId);
         if (jogador) {
-          // Garante que todos os votos sejam objetos no formato correto
           const novosVotos = [
-            ...(jogador.votos.filter((v) => typeof v === "object") || []), // Mantém apenas objetos válidos
+            ...(jogador.votos || []), // Garante que votos é um array válido
             { userId: user!.uid, vote: votos[jogadorId] },
           ];
           updates[`/jogadores/${jogadorId}/votos`] = novosVotos;
         }
       });
+  
+      console.log("Atualizando votos:", updates); // Log para depuração
   
       await update(ref(database), updates);
   
@@ -128,6 +129,7 @@ const Votacao = () => {
       setErro("Erro ao registrar votos. Tente novamente.");
     }
   };
+  
   
 
   const handleCloseModal = () => {
