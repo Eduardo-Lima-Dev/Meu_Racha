@@ -93,10 +93,13 @@ const AdminDashboard = () => {
     setEditStats((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleUpdateJogador = (id: string, assistencias: number, gols: number) => {
+  const handleUpdateJogador = (id: string, key: "assistencias" | "gols", value: number) => {
     setModifiedJogadores((prev) => ({
       ...prev,
-      [id]: { assistencias, gols },
+      [id]: {
+        ...prev[id],
+        [key]: value,
+      },
     }));
   };
 
@@ -123,6 +126,20 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Erro ao remover jogadores:", error);
       setMensagem("Erro ao remover jogadores. Tente novamente.");
+    }
+  };
+
+  const handleClearStars = async () => {
+    try {
+      const updates: { [key: string]: { votos: [] } } = {};
+      jogadores.forEach((jogador) => {
+        updates[`jogadores/${jogador.id}`] = { votos: [] };
+      });
+      await update(ref(database), updates);
+      setMensagem("Todas as estrelas foram limpas com sucesso!");
+    } catch (error) {
+      console.error("Erro ao limpar estrelas:", error);
+      setMensagem("Erro ao limpar estrelas. Tente novamente.");
     }
   };
 
@@ -200,10 +217,15 @@ const AdminDashboard = () => {
               Adicionar Jogador
             </Button>
           </form>
-          <Button onClick={handleClearJogadores} className="w-full mt-4" variant="destructive">
-            Limpar Jogadores
-          </Button>
-          <Button onClick={handleSaveUpdates} className="w-full mt-4 bg-blue-500 text-white">
+            <div className="flex justify-center space-x-4 w-full max-w-md mb-4">
+            <Button onClick={handleClearJogadores} className="w-full mt-4" variant="destructive">
+              Limpar Jogadores
+            </Button>
+            <Button onClick={handleClearStars} className="w-full mt-4 bg-yellow-500 text-white">
+              Limpar Estrelas
+            </Button>
+            </div>
+          <Button onClick={handleSaveUpdates} className="w-full bg-blue-500 text-white">
             Atualizar Jogadores
           </Button>
         </CardContent>
@@ -233,7 +255,7 @@ const AdminDashboard = () => {
                       type="number"
                       value={modifiedJogadores[jogador.id]?.assistencias ?? jogador.assistencias}
                       onChange={(e) =>
-                        handleUpdateJogador(jogador.id, Number(e.target.value), jogador.gols)
+                        handleUpdateJogador(jogador.id, "assistencias", Number(e.target.value))
                       }
                     />
                   </div>
@@ -246,7 +268,7 @@ const AdminDashboard = () => {
                       type="number"
                       value={modifiedJogadores[jogador.id]?.gols ?? jogador.gols}
                       onChange={(e) =>
-                        handleUpdateJogador(jogador.id, jogador.assistencias, Number(e.target.value))
+                        handleUpdateJogador(jogador.id, "gols", Number(e.target.value))
                       }
                     />
                   </div>
