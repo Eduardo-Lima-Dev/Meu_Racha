@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import Modal from "./auth_votos/modal";
+import { ArrowLeft } from "lucide-react";
 
 interface Jogador {
   id: string;
@@ -23,9 +24,18 @@ const Votacao = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
   const [votos, setVotos] = useState<{ [key: string]: number }>({});
   const [votacaoLiberada, setVotacaoLiberada] = useState<boolean | null>(null);
-  const [user, setUser] = useState<{ uid: string } | null>(null); // Armazena o usuário logado
-  const [modalVisible, setModalVisible] = useState(false);
-  const [erro, setErro] = useState<string | null>(null); // Mensagens de erro
+  const [user, setUser] = useState<{ uid: string } | null>(null);
+  const [modalConfig, setModalConfig] = useState<{
+    title: string;
+    message: string;
+    icon: string;
+    visible: boolean;
+  }>({
+    title: "",
+    message: "",
+    icon: "",
+    visible: false,
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -34,7 +44,7 @@ const Votacao = () => {
       if (currentUser) {
         setUser(currentUser);
       } else {
-        router.push("/login"); // Redireciona se não autenticado
+        router.push("/login");
       }
     });
 
@@ -46,11 +56,7 @@ const Votacao = () => {
       const dbRef = ref(database, "auth_votos/liberado");
       try {
         const snapshot = await get(dbRef);
-        if (snapshot.exists()) {
-          setVotacaoLiberada(snapshot.val());
-        } else {
-          setVotacaoLiberada(false);
-        }
+        setVotacaoLiberada(snapshot.exists() ? snapshot.val() : false);
       } catch (error) {
         console.error("Erro ao buscar configurações:", error);
         setVotacaoLiberada(false);
@@ -92,49 +98,64 @@ const Votacao = () => {
 
   const handleSubmit = async () => {
     if (Object.keys(votos).length !== jogadores.length) {
-      setErro("Por favor, vote em todos os jogadores antes de enviar.");
+      setModalConfig({
+        title: "Erro",
+        message: "Por favor, vote em todos os jogadores antes de enviar.",
+        icon: "alert",
+        visible: true,
+      });
       return;
     }
-  
+
     try {
-      // Verifica se o usuário já votou
       for (const jogador of jogadores) {
         if (Array.isArray(jogador.votos) && jogador.votos.some((voto) => voto.userId === user?.uid)) {
-          setErro("Você já votou. Não é possível votar novamente.");
+          setModalConfig({
+            title: "Erro",
+            message: "Você já votou. Não é possível votar novamente.",
+            icon: "alert",
+            visible: true,
+          });
           return;
         }
       }
-  
-      // Atualiza os votos no banco de dados
+
       const updates: { [key: string]: { userId: string; vote: number }[] } = {};
       Object.keys(votos).forEach((jogadorId) => {
         const jogador = jogadores.find((j) => j.id === jogadorId);
         if (jogador) {
           const novosVotos = [
-            ...(jogador.votos || []), // Garante que votos é um array válido
+            ...(jogador.votos || []),
             { userId: user!.uid, vote: votos[jogadorId] },
           ];
           updates[`/jogadores/${jogadorId}/votos`] = novosVotos;
         }
       });
-  
-      console.log("Atualizando votos:", updates); // Log para depuração
-  
+
       await update(ref(database), updates);
-  
-      // Exibir modal de sucesso e redirecionar para home
-      setModalVisible(true);
+
+      setModalConfig({
+        title: "Sucesso",
+        message: "Votação realizada com sucesso!",
+        icon: "success",
+        visible: true,
+      });
     } catch (error) {
       console.error("Erro ao registrar votos:", error);
-      setErro("Erro ao registrar votos. Tente novamente.");
+      setModalConfig({
+        title: "Erro",
+        message: "Erro ao registrar votos. Tente novamente.",
+        icon: "alert",
+        visible: true,
+      });
     }
   };
-  
-  
 
   const handleCloseModal = () => {
-    setModalVisible(false);
-    router.push("/");
+    setModalConfig((prev) => ({ ...prev, visible: false }));
+    if (modalConfig.icon === "success") {
+      router.push("/");
+    }
   };
 
   if (votacaoLiberada === false) {
@@ -143,19 +164,27 @@ const Votacao = () => {
         title="Votação Não Liberada"
         message="A votação não está disponível no momento."
         icon="alert"
-        onClose={handleCloseModal}
+        onClose={() => router.push("/")}
       />
     );
   }
 
   if (!user) {
-    return null; // Exibe nada enquanto verifica autenticação
+    return null;
   }
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Votação de Jogadores</h1>
-      {erro && <p className="text-red-500 mb-4">{erro}</p>}
+      <div className="flex items-center mb-4">
+        <Button 
+          variant="ghost" 
+          className="mr-2" 
+          onClick={() => router.push("/")}
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <h1 className="text-2xl font-bold">Votação de Jogadores</h1>
+      </div> 
       {jogadores.map((jogador) => (
         <Card key={jogador.id} className="mb-4">
           <CardHeader>
@@ -183,11 +212,11 @@ const Votacao = () => {
         Enviar Votos
       </Button>
 
-      {modalVisible && (
+      {modalConfig.visible && (
         <Modal
-          title="Votação Enviada"
-          message="Obrigado por participar da votação!"
-          icon="success"
+          title={modalConfig.title}
+          message={modalConfig.message}
+          icon={modalConfig.icon}
           onClose={handleCloseModal}
         />
       )}
