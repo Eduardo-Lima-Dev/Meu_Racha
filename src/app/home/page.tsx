@@ -13,19 +13,20 @@ interface Jogador {
   nome: string;
   assistencias: number;
   gols: number;
-  votos: number[];
+  votos: { userId: string; vote: number }[];
 }
 
 const Home = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
-  const [loading, setLoading] = useState(true); // Adicionado para mostrar carregamento
-  const [error, setError] = useState(""); // Adicionado para capturar erros
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchJogadores = async () => {
-      setLoading(true); // Inicia carregamento
-      setError(""); // Limpa erros anteriores
+      setLoading(true);
+      setError("");
       const dbRef = ref(database);
+
       try {
         const snapshot = await get(child(dbRef, "jogadores"));
         if (snapshot.exists()) {
@@ -42,17 +43,25 @@ const Home = () => {
         console.error("Erro ao buscar jogadores:", error);
         setError("Erro ao carregar jogadores. Tente novamente mais tarde.");
       } finally {
-        setLoading(false); // Finaliza carregamento
+        setLoading(false);
       }
     };
 
     fetchJogadores();
   }, []);
 
-  const calcularMedia = (votos: number[] | undefined) => {
+  // const calcularMedia = (votos: { userId: string; vote: number }[] | undefined) => {
+  //   if (!votos || votos.length === 0) return 0;
+  //   const total = votos.reduce((acc, voto) => acc + voto.vote, 0);
+  //   return total / votos.length;
+  // };
+
+  const calcularMedia = (votos: { userId: string; vote: number }[] | undefined) => {
     if (!votos || votos.length === 0) return 0;
-    const total = votos.reduce((acc, voto) => acc + voto, 0);
-    return total / votos.length;
+    const votosValidos = votos.filter((voto) => typeof voto === "object" && voto.vote !== undefined);
+    if (votosValidos.length === 0) return 0;
+    const total = votosValidos.reduce((acc, voto) => acc + voto.vote, 0);
+    return total / votosValidos.length;
   };
 
   const renderStars = (average: number) => {
@@ -91,7 +100,8 @@ const Home = () => {
       {!loading && !error && jogadores.length === 0 && (
         <p className="text-center">Nenhum jogador encontrado no ranking.</p>
       )}
-      {!loading && !error &&
+      {!loading &&
+        !error &&
         categorias.map((categoria) => (
           <div key={categoria} className="mb-6">
             <h2 className="text-xl font-semibold mb-2 text-center">

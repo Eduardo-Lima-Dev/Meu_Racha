@@ -23,17 +23,18 @@ const Votacao = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
   const [votos, setVotos] = useState<{ [key: string]: number }>({});
   const [votacaoLiberada, setVotacaoLiberada] = useState<boolean | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
   const [user, setUser] = useState<{ uid: string } | null>(null); // Armazena o usuário logado
+  const [modalVisible, setModalVisible] = useState(false);
+  const [erro, setErro] = useState<string | null>(null); // Mensagens de erro
   const router = useRouter();
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        setUser(currentUser); // Define o usuário autenticado
+        setUser(currentUser);
       } else {
-        router.push("/login"); // Redireciona para login se não autenticado
+        router.push("/login"); // Redireciona se não autenticado
       }
     });
 
@@ -89,32 +90,82 @@ const Votacao = () => {
     }));
   };
 
+  // const handleSubmit = async () => {
+  //   if (Object.keys(votos).length !== jogadores.length) {
+  //     setErro("Por favor, vote em todos os jogadores antes de enviar.");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Verifica se o usuário já votou
+  //     for (const jogador of jogadores) {
+  //       if (jogador.votos.some((voto) => voto.userId === user?.uid)) {
+  //         setErro("Você já votou. Não é possível votar novamente.");
+  //         return;
+  //       }
+  //     }
+
+  //     // Atualiza os votos no banco de dados
+  //     const updates: { [key: string]: { userId: string; vote: number }[] } = {};
+  //     Object.keys(votos).forEach((jogadorId) => {
+  //       const jogador = jogadores.find((j) => j.id === jogadorId);
+  //       if (jogador) {
+  //         const novosVotos = jogador.votos
+  //           ? [...jogador.votos, { userId: user!.uid, vote: votos[jogadorId] }]
+  //           : [{ userId: user!.uid, vote: votos[jogadorId] }];
+  //         updates[`/jogadores/${jogadorId}/votos`] = novosVotos as { userId: string; vote: number }[];
+  //       }
+  //     });
+
+  //     await update(ref(database), updates);
+
+  //     // Exibir modal de sucesso e redirecionar para home
+  //     setModalVisible(true);
+  //   } catch (error) {
+  //     console.error("Erro ao registrar votos:", error);
+  //     setErro("Erro ao registrar votos. Tente novamente.");
+  //   }
+  // };
+
   const handleSubmit = async () => {
     if (Object.keys(votos).length !== jogadores.length) {
-      alert("Por favor, vote em todos os jogadores antes de enviar.");
+      setErro("Por favor, vote em todos os jogadores antes de enviar.");
       return;
     }
-
+  
     try {
+      // Verifica se o usuário já votou
+      for (const jogador of jogadores) {
+        if (jogador.votos.some((voto) => voto.userId === user?.uid)) {
+          setErro("Você já votou. Não é possível votar novamente.");
+          return;
+        }
+      }
+  
+      // Atualiza os votos no banco de dados
       const updates: { [key: string]: { userId: string; vote: number }[] } = {};
       Object.keys(votos).forEach((jogadorId) => {
         const jogador = jogadores.find((j) => j.id === jogadorId);
         if (jogador) {
-          const novosVotos = jogador.votos
-            ? [...jogador.votos, { userId: user?.uid, vote: votos[jogadorId] }]
-            : [{ userId: user?.uid, vote: votos[jogadorId] }];
-          updates[`/jogadores/${jogadorId}/votos`] = novosVotos as { userId: string; vote: number }[];
+          // Garante que todos os votos sejam objetos no formato correto
+          const novosVotos = [
+            ...(jogador.votos.filter((v) => typeof v === "object") || []), // Mantém apenas objetos válidos
+            { userId: user!.uid, vote: votos[jogadorId] },
+          ];
+          updates[`/jogadores/${jogadorId}/votos`] = novosVotos;
         }
       });
-
+  
       await update(ref(database), updates);
-
-      // Exibir modal de sucesso.
+  
+      // Exibir modal de sucesso e redirecionar para home
       setModalVisible(true);
     } catch (error) {
       console.error("Erro ao registrar votos:", error);
+      setErro("Erro ao registrar votos. Tente novamente.");
     }
   };
+  
 
   const handleCloseModal = () => {
     setModalVisible(false);
@@ -139,6 +190,7 @@ const Votacao = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Votação de Jogadores</h1>
+      {erro && <p className="text-red-500 mb-4">{erro}</p>}
       {jogadores.map((jogador) => (
         <Card key={jogador.id} className="mb-4">
           <CardHeader>
