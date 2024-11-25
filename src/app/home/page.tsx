@@ -96,15 +96,18 @@ const Home = () => {
       )}
       {!loading &&
         !error &&
-        categorias.map((categoria) => (
-          <div key={categoria} className="mb-6">
-            <h2 className="text-xl font-semibold mb-2 text-center">
-              {categoria} Estrela{categoria > 1 && "s"}
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
-              {jogadores
-                .filter((jogador) => Math.round(calcularMedia(jogador.votos)) === categoria)
-                .map((jogador) => (
+        categorias.map((categoria) => {
+          const jogadoresFiltrados = jogadores
+            .filter((jogador) => Math.round(calcularMedia(jogador.votos)) === categoria)
+            .sort((a, b) => calcularMedia(b.votos) - calcularMedia(a.votos));
+
+          return (
+            <div key={categoria} className="mb-6">
+              <h2 className="text-xl font-semibold mb-2 text-center">
+                {categoria} Estrela{categoria > 1 && "s"}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
+                {jogadoresFiltrados.map((jogador) => (
                   <Card key={jogador.id} className="w-full max-w-xs">
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center">
@@ -121,9 +124,10 @@ const Home = () => {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
     </div>
   );
 };
