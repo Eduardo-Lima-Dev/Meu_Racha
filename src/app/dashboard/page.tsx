@@ -10,6 +10,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ChevronDown, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const AdminDashboard = () => {
   const [nome, setNome] = useState("");
@@ -24,10 +25,13 @@ const AdminDashboard = () => {
       assistencias: number;
       gols: number;
       votos: { userId: string; vote: number }[];
+      excluirDaVotacao: boolean;
     }[]
   >([]);
   const [editStats, setEditStats] = useState<{ [key: string]: boolean }>({});
-  const [modifiedJogadores, setModifiedJogadores] = useState<{ [key: string]: { assistencias: number; gols: number } }>({});
+  const [modifiedJogadores, setModifiedJogadores] = useState<{ [key: string]: {
+    excluirDaVotacao: boolean; assistencias: number; gols: number 
+} }>({});
 
   const auth = getAuth(app);
   const router = useRouter();
@@ -93,7 +97,7 @@ const AdminDashboard = () => {
     setEditStats((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleUpdateJogador = (id: string, key: "assistencias" | "gols", value: number) => {
+  const handleUpdateJogador = (id: string, key: "assistencias" | "gols" | "excluirDaVotacao", value: number | boolean) => {
     setModifiedJogadores((prev) => ({
       ...prev,
       [id]: {
@@ -133,7 +137,7 @@ const AdminDashboard = () => {
     try {
       const updates: { [key: string]: { votos: { userId: string; vote: number }[] } } = {};
       jogadores.forEach((jogador) => {
-        updates[`jogadores/${jogador.id}/votos`] = { votos: [] }; // Atualiza apenas o campo 'votos'
+        updates[`jogadores/${jogador.id}/votos`] = { votos: [] };
       });
       await update(ref(database), updates);
       setMensagem("Todas as estrelas foram zeradas com sucesso!");
@@ -146,7 +150,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      {/* Cabeçalho com fundo e opções de Logout e Home */}
       <header className="flex justify-between w-full max-w-md mb-4 p-4 bg-gray-800 text-white rounded-lg">
         <Link href="/" passHref>
           <Button variant="ghost" className="text-lg text-white">
@@ -158,7 +161,6 @@ const AdminDashboard = () => {
         </Button>
       </header>
 
-      {/* Controle de Liberação de Votação */}
       <Card className="w-full max-w-md mb-8">
         <CardHeader>
           <CardTitle>Controle de Votação</CardTitle>
@@ -272,6 +274,18 @@ const AdminDashboard = () => {
                         handleUpdateJogador(jogador.id, "gols", Number(e.target.value))
                       }
                     />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                  <div>
+                    <Checkbox
+                      id={`excluir-${jogador.id}`}
+                      checked={modifiedJogadores[jogador.id]?.excluirDaVotacao ?? jogador.excluirDaVotacao}
+                      onCheckedChange={(value) => handleUpdateJogador(jogador.id, "excluirDaVotacao", value as boolean)}
+                    />
+                    <label htmlFor={`excluir-${jogador.id}`} className="text-sm font-medium">
+                      Excluir da Votação
+                    </label>
+                  </div>
                   </div>
                 </div>
               </CardContent>

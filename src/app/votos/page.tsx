@@ -18,6 +18,7 @@ interface Jogador {
   assistencias: number;
   gols: number;
   votos: { userId: string; vote: number }[];
+  excluirDaVotacao: boolean;
 }
 
 const Votacao = () => {
@@ -185,7 +186,9 @@ const Votacao = () => {
         </Button>
         <h1 className="text-2xl font-bold">Votação de Jogadores</h1>
       </div> 
-      {jogadores.map((jogador) => (
+      {jogadores
+      .filter((jogador) => !jogador.excluirDaVotacao) 
+      .map((jogador) => (
         <Card key={jogador.id} className="mb-4">
           <CardHeader>
             <CardTitle>{jogador.nome}</CardTitle>
