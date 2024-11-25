@@ -6,7 +6,7 @@ interface ModalProps {
   title: string;
   message: string;
   icon: string;
-  onClose: () => void; // Adiciona a propriedade onClose
+  onClose: () => void; 
 }
 
 const Modal: React.FC<ModalProps> = ({ title, message, icon, onClose }) => {
