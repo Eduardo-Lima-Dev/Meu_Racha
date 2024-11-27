@@ -1,4 +1,3 @@
-// src/page.tsx
 "use client";
 
 import useVotacao from "./hooks/useVotacao";
@@ -6,9 +5,10 @@ import VotacaoHeader from "./components/VotacaoHeader";
 import VotacaoJogadorCard from "./components/VotacaoJogadorCard";
 import ModalHandler from "./components/ModalHandler";
 import { Button } from "@/components/ui/button";
-import router from "next/dist/client/router";
+import { useRouter } from "next/navigation";
 
 const Votacao = () => {
+  const router = useRouter(); 
   const {
     jogadores,
     votacaoLiberada,
@@ -28,7 +28,7 @@ const Votacao = () => {
           icon: "alert",
           visible: true,
         }}
-        handleCloseModal={() => router.push("/")}
+        handleCloseModal={() => router.push("/")} 
       />
     );
   }
