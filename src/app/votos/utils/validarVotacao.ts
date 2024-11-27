@@ -13,14 +13,16 @@ export const validarVotacao = (
   jogadores: Jogador[],
   user: { uid: string } | null
 ) => {
-  if (Object.keys(votos).length !== jogadores.length) {
+  const jogadoresHabilitados = jogadores.filter(jogador => !jogador.excluirDaVotacao);
+
+  if (Object.keys(votos).length !== jogadoresHabilitados.length) {
     return {
       isValid: false,
       message: "Por favor, vote em todos os jogadores antes de enviar.",
     };
   }
 
-  for (const jogador of jogadores) {
+  for (const jogador of jogadoresHabilitados) {
     if (Array.isArray(jogador.votos) && jogador.votos.some((voto) => voto.userId === user?.uid)) {
       return {
         isValid: false,
