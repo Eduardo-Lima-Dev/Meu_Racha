@@ -1,19 +1,10 @@
-// src/hooks/useVotacao.ts
 import { useEffect, useState } from "react";
 import { ref, get, update } from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { database } from "@/config/firebaseConfig";
 import { validarVotacao } from "../utils/validarVotacao";
-
-interface Jogador {
-  id: string;
-  nome: string;
-  assistencias: number;
-  gols: number;
-  votos: { userId: string; vote: number }[];
-  excluirDaVotacao: boolean;
-}
+import { Jogador } from "@/app/dashboard/types";
 
 const useVotacao = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
@@ -33,6 +24,26 @@ const useVotacao = () => {
   });
   const router = useRouter();
 
+  const [usuariosJaVotaram, setUsuariosJaVotaram] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    const fetchUsuariosJaVotaram = async () => {
+      const dbRef = ref(database, "auth_votos/usuariosJaVotaram");
+      try {
+        const snapshot = await get(dbRef);
+        setUsuariosJaVotaram(snapshot.exists() ? snapshot.val() : {});
+      } catch (error) {
+        console.error("Erro ao buscar usuários que já votaram:", error);
+      }
+    };
+  
+    if (votacaoLiberada) {
+      fetchUsuariosJaVotaram();
+    } else {
+      setUsuariosJaVotaram({});
+    }
+  }, [votacaoLiberada]);
+
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -48,18 +59,26 @@ const useVotacao = () => {
 
   useEffect(() => {
     const fetchConfiguracoes = async () => {
-      const dbRef = ref(database, "auth_votos/liberado");
+      const dbRef = ref(database, "auth_votos");
       try {
         const snapshot = await get(dbRef);
-        setVotacaoLiberada(snapshot.exists() ? snapshot.val() : false);
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          setVotacaoLiberada(data.liberado);
+
+          if (!data.liberado) {
+            await update(ref(database, "auth_votos"), { usuariosJaVotaram: {} });
+          }
+        }
       } catch (error) {
         console.error("Erro ao buscar configurações:", error);
         setVotacaoLiberada(false);
       }
     };
-
+  
     fetchConfiguracoes();
   }, []);
+  
 
   useEffect(() => {
     if (votacaoLiberada) {
@@ -92,8 +111,8 @@ const useVotacao = () => {
   };
 
   const handleSubmit = async () => {
-    const { isValid, message } = validarVotacao(votos, jogadores, user);
-
+    const { isValid, message } = validarVotacao(votos, jogadores, user, usuariosJaVotaram);
+  
     if (!isValid) {
       setModalConfig({
         title: "Erro",
@@ -103,9 +122,10 @@ const useVotacao = () => {
       });
       return;
     }
-
+  
     try {
-      const updates: { [key: string]: { userId: string; vote: number }[] } = {};
+      const updates: { [key: string]: { userId?: string; vote?: number }[] | boolean } = {};
+  
       Object.keys(votos).forEach((jogadorId) => {
         const jogador = jogadores.find((j) => j.id === jogadorId);
         if (jogador) {
@@ -116,9 +136,11 @@ const useVotacao = () => {
           updates[`/jogadores/${jogadorId}/votos`] = novosVotos;
         }
       });
-
+  
+      updates[`/auth_votos/usuariosJaVotaram/${user!.uid}`] = true;
+  
       await update(ref(database), updates);
-
+  
       setModalConfig({
         title: "Sucesso",
         message: "Votação realizada com sucesso!",
@@ -134,7 +156,7 @@ const useVotacao = () => {
         visible: true,
       });
     }
-  };
+  };  
 
   const handleCloseModal = () => {
     setModalConfig((prev) => ({ ...prev, visible: false }));

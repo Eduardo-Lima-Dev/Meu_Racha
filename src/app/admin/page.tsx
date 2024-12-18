@@ -14,24 +14,20 @@ const AdminLogin: React.FC = () => {
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const auth = getAuth(app);
-  const db = getFirestore(app); // Inicialização do Firestore
+  const db = getFirestore(app);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Autentica o usuário.
       const userCredential = await signInWithEmailAndPassword(auth, email, senha);
       const userId = userCredential.user.uid;
-  
-      // Verifica a role no Firestore.
+
       const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists() && userDoc.data().role) {
-        // Se o documento existe e tem uma role definida, bloqueia o login.
         await auth.signOut();
         setErro("Acesso negado. Apenas contas sem role podem acessar.");
       } else {
-        // Se não existe uma role, redireciona para o dashboard.
         router.push("/dashboard");
       }
     } catch (error) {
@@ -39,10 +35,18 @@ const AdminLogin: React.FC = () => {
       setErro("Credenciais inválidas. Por favor, tente novamente.");
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen">
+
+      {/* Botão Home */}
+      <Button
+        onClick={() => router.push("/")}
+        className="absolute top-4 left-4"
+      >
+        Home
+      </Button>
+
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Login do Administrador</CardTitle>
@@ -74,7 +78,11 @@ const AdminLogin: React.FC = () => {
               />
             </div>
             {erro && <p className="text-red-500">{erro}</p>}
-            <Button type="submit">Entrar</Button>
+
+            {/* Botão centralizado */}
+            <div className="flex justify-center mt-4">
+              <Button type="submit">Entrar</Button>
+            </div>
           </form>
         </CardContent>
       </Card>
