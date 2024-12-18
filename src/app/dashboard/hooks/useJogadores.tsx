@@ -36,12 +36,30 @@ const useJogadores = () => {
 
   const toggleVotacao = async () => {
     try {
-      await update(ref(database, "auth_votos"), { liberado: !votacaoLiberada });
-      setVotacaoLiberada(!votacaoLiberada);
+      const novaLiberacao = !votacaoLiberada;
+  
+      const updates: { [key: string]: boolean | object } = {
+        liberado: novaLiberacao,
+      };
+
+      if (!novaLiberacao) {
+        updates["usuariosJaVotaram"] = {};
+      }
+
+      await update(ref(database, "auth_votos"), updates);
+
+      setVotacaoLiberada(novaLiberacao);
+  
+      if (!novaLiberacao) {
+        console.log("Votação bloqueada e usuários resetados.");
+      } else {
+        console.log("Votação liberada.");
+      }
     } catch (error) {
       console.error("Erro ao atualizar status de votação:", error);
     }
   };
+  
 
   const logout = async (router: { push: (path: string) => void }) => {
     try {
