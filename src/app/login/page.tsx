@@ -14,7 +14,7 @@ const UserLogin = () => {
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
   const [role] = useState("user");
-  const [isCadastro, setIsCadastro] = useState(false); 
+  const [isCadastro, setIsCadastro] = useState(false);
   const [erro, setErro] = useState("");
   const auth = getAuth(app);
   const db = getFirestore(app);
@@ -24,7 +24,7 @@ const UserLogin = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      router.push("/votos"); 
+      router.push("/votos");
     } catch {
       setErro("Credenciais inválidas. Por favor, tente novamente.");
     }
@@ -51,6 +51,7 @@ const UserLogin = () => {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen">
+
       <Button
         onClick={() => router.push("/")}
         className="absolute top-4 left-4"
@@ -86,7 +87,7 @@ const UserLogin = () => {
                     id="role"
                     type="text"
                     value={role}
-                    disabled 
+                    disabled
                     className="bg-gray-200 cursor-not-allowed"
                   />
                 </div>
@@ -117,10 +118,12 @@ const UserLogin = () => {
               />
             </div>
             {erro && <p className="text-red-500">{erro}</p>}
+
+            <div className="text-center mt-4">
+              <Button type="submit">{isCadastro ? "Cadastrar" : "Entrar"}</Button>
+            </div>
           </form>
-          <div className="text-center mt-4">
-          <Button type="submit">{isCadastro ? "Cadastrar" : "Entrar"}</Button>
-          </div>
+
           <div className="text-center mt-4">
             <Button
               variant="link"
