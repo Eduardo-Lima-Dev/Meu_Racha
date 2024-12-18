@@ -5,15 +5,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { database } from "@/config/firebaseConfig";
 import { validarVotacao } from "../utils/validarVotacao";
-
-interface Jogador {
-  id: string;
-  nome: string;
-  assistencias: number;
-  gols: number;
-  votos: { userId: string; vote: number }[];
-  excluirDaVotacao: boolean;
-}
+import { Jogador } from "@/app/dashboard/types";
 
 const useVotacao = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);

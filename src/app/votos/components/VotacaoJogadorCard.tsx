@@ -2,15 +2,7 @@
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
-interface Jogador {
-  id: string;
-  nome: string;
-  assistencias: number;
-  gols: number;
-  votos: { userId: string; vote: number }[];
-  excluirDaVotacao: boolean;
-}
+import { Jogador } from "@/app/dashboard/types";
 
 interface VotacaoJogadorCardProps {
   jogador: Jogador;
