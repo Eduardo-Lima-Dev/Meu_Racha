@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, getFirestore } from "firebase/firestore"; // Import Firestore
+import { doc, setDoc, getFirestore } from "firebase/firestore";
 import { app } from "../../config/firebaseConfig";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,18 +13,18 @@ const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
-  const [role] = useState("user"); // Default role is "user"
-  const [isCadastro, setIsCadastro] = useState(false); // Alterna entre login e cadastro
+  const [role] = useState("user");
+  const [isCadastro, setIsCadastro] = useState(false); 
   const [erro, setErro] = useState("");
   const auth = getAuth(app);
-  const db = getFirestore(app); // Firestore initialization
+  const db = getFirestore(app);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      router.push("/home"); // Redireciona para a página principal
+      router.push("/votos"); 
     } catch {
       setErro("Credenciais inválidas. Por favor, tente novamente.");
     }
@@ -33,18 +33,16 @@ const UserLogin = () => {
   const handleCadastro = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Create the user
       const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
       const userId = userCredential.user.uid;
 
-      // Save the user information in Firestore
       await setDoc(doc(db, "users", userId), {
         nome,
         email,
-        role, // Set the role as "user"
+        role,
       });
 
-      router.push("/home"); // Redireciona após cadastro
+      router.push("/votos");
     } catch (error) {
       console.error("Erro ao criar conta:", error);
       setErro("Erro ao criar conta. Por favor, tente novamente.");
@@ -52,7 +50,14 @@ const UserLogin = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="relative flex items-center justify-center min-h-screen">
+      <Button
+        onClick={() => router.push("/")}
+        className="absolute top-4 left-4"
+      >
+        Home
+      </Button>
+
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>{isCadastro ? "Cadastro de Usuário" : "Login de Usuário"}</CardTitle>
@@ -81,7 +86,7 @@ const UserLogin = () => {
                     id="role"
                     type="text"
                     value={role}
-                    disabled // Apenas exibe o valor fixo
+                    disabled 
                     className="bg-gray-200 cursor-not-allowed"
                   />
                 </div>
@@ -112,8 +117,10 @@ const UserLogin = () => {
               />
             </div>
             {erro && <p className="text-red-500">{erro}</p>}
-            <Button type="submit">{isCadastro ? "Cadastrar" : "Entrar"}</Button>
           </form>
+          <div className="text-center mt-4">
+          <Button type="submit">{isCadastro ? "Cadastrar" : "Entrar"}</Button>
+          </div>
           <div className="text-center mt-4">
             <Button
               variant="link"
