@@ -20,6 +20,9 @@ const Home = () => {
         <Button asChild variant="outline">
           <Link href="/admin">Ir para Administração</Link>
         </Button>
+        <Button asChild variant="outline">
+          <Link href="/graficos">Ir para Estatísticas</Link>
+        </Button>
       </div>
       
       {loading && <p className="text-center">Carregando jogadores...</p>}
