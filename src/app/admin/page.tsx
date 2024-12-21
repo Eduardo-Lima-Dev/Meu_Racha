@@ -39,7 +39,6 @@ const AdminLogin: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen">
 
-      {/* Botão Home */}
       <Button
         onClick={() => router.push("/")}
         className="absolute top-4 left-4"
@@ -79,7 +78,6 @@ const AdminLogin: React.FC = () => {
             </div>
             {erro && <p className="text-red-500">{erro}</p>}
 
-            {/* Botão centralizado */}
             <div className="flex justify-center mt-4">
               <Button type="submit">Entrar</Button>
             </div>
