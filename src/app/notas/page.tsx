@@ -85,10 +85,10 @@ const NotasJogador: React.FC = () => {
         Jogador {paginaAtual + 1} de {jogadores.length}
       </div>
       <div className="flex space-x-4 mt-6">
-        <Button onClick={() => router.push("/")} className="bg-blue-500 text-white">
+        <Button onClick={() => router.push("/")} className=" text-white">
           Ir para Home
         </Button>
-        <Button onClick={() => router.push("/graficos")} className="bg-green-500 text-white">
+        <Button onClick={() => router.push("/graficos")} variant="outline">
           Ir para Gráficos
         </Button>
       </div>
