@@ -1,12 +1,15 @@
-import { Config } from 'jest';
+import type { Config } from 'jest';
 
 const config: Config = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
-  moduleFileExtensions: ['js', 'ts', 'tsx', 'json'],
-  testMatch: ['**/__tests__/**/*.test.(ts|tsx|js)'],
-  collectCoverage: true,
-  coverageDirectory: 'coverage',
+  testEnvironment: 'jest-environment-jsdom',
+  transform: {
+    '^.+\\.tsx?$': 'babel-jest',
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  },
 };
 
 export default config;
