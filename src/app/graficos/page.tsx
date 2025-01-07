@@ -57,10 +57,10 @@ const EstatisticasJogador: React.FC = () => {
         )}
       </div>
       <div className="flex space-x-4 mt-6">
-        <Button onClick={() => router.push("/")} className="bg-blue-500 text-white">
+        <Button onClick={() => router.push("/")} className="bg-black text-white">
           Ir para Home
         </Button>
-        <Button onClick={() => router.push("/notas")} className="bg-green-500 text-white">
+        <Button onClick={() => router.push("/notas")} variant="outline">
           Ir para Notas
         </Button>
       </div>
