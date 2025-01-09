@@ -25,16 +25,7 @@ export const useJogadoresEstatisticas = () => {
           const listaJogadores: EstatisticasJogador[] = Object.keys(data).map((key) => {
             const notas: { [key: string]: { [key: string]: number } } = data[key].notas || {};
             const quantidadeNotas = Object.keys(notas).length;
-    
-            // const somatorioNotas = Object.values(notas).reduce(
-            //   (acc: { [key: string]: number }, usuarioNotas: any) => {
-            //     Object.keys(usuarioNotas).forEach((estatistica) => {
-            //       acc[estatistica] = (acc[estatistica] || 0) + usuarioNotas[estatistica];
-            //     });
-            //     return acc;
-            //   },
-            //   {}
-            // );
+
             const somatorioNotas = Object.values(notas).reduce(
               (
                 acc: { [key: string]: number },
@@ -48,7 +39,6 @@ export const useJogadoresEstatisticas = () => {
               {}
             );
             
-    
             return {
               id: key,
               nome: data[key].nome || "",
@@ -59,7 +49,7 @@ export const useJogadoresEstatisticas = () => {
               passe: calcularMedia(somatorioNotas["passe"], quantidadeNotas),
               quantidadeNotas,
             };
-          });
+          });            
     
           setJogadores(listaJogadores);
     

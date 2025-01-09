@@ -11,6 +11,7 @@
 - **Registro e Atualização de Gols e Assistências**: Funcionalidade para registrar e atualizar o número de gols e assistências de cada jogador.
 - **Limpeza de Dados**: Opção para zerar todo o banco de dados, disponível apenas para ADMs.
 - **Limpeza de Estrelas**: Possibilidade de resetar as avaliações de estrelas dos jogadores.
+- **Visualização de Gráficos**: Gráficos para visualizar estatísticas e desempenho dos jogadores ao longo do tempo.
 
 ## 🔒 Regras de Votação
 
@@ -37,11 +38,13 @@ meu-racha/
 │   │   ├── admin/
 │   │   ├── dashboard/
 │   │   ├── fonts/
+|   |   ├── graficos/
 │   │   ├── home/
 │   │   ├── login/
 │   │   └── votos/
-│   │       └── auth_votos
-│   │            └── modal.tsx
+│   │   |    └── auth_votos
+│   │   |      └── modal.tsx
+|   |   |     
 │   ├── components/
 │   ├── config/
 │   ├── hooks/
