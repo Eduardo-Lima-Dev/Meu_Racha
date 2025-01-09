@@ -94,9 +94,11 @@ const useNotas = () => {
       const updates: { [key: string]: { [key: string]: number } } = {};
   
       Object.keys(notas).forEach((jogadorId) => {
-        const notaAtual = notas[jogadorId]; 
-        const jogadorNotasPath = `/jogadores/${jogadorId}/notas/${user.uid}`; 
+        const notaAtual = notas[jogadorId];
+
+        if (!user.uid || Object.keys(notaAtual).length === 0) return;
   
+        const jogadorNotasPath = `/jogadores/${jogadorId}/notas/${user.uid}`;
         updates[jogadorNotasPath] = notaAtual; 
       });
   
@@ -117,7 +119,7 @@ const useNotas = () => {
         visible: true,
       });
     }
-  };
+  };  
 
   const handleCloseModal = () => {
     setModalConfig((prev) => ({ ...prev, visible: false }));
