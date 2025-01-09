@@ -23,11 +23,23 @@ export const useJogadoresEstatisticas = () => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const listaJogadores: EstatisticasJogador[] = Object.keys(data).map((key) => {
-            const notas = data[key].notas || {};
+            const notas: { [key: string]: { [key: string]: number } } = data[key].notas || {};
             const quantidadeNotas = Object.keys(notas).length;
     
+            // const somatorioNotas = Object.values(notas).reduce(
+            //   (acc: { [key: string]: number }, usuarioNotas: any) => {
+            //     Object.keys(usuarioNotas).forEach((estatistica) => {
+            //       acc[estatistica] = (acc[estatistica] || 0) + usuarioNotas[estatistica];
+            //     });
+            //     return acc;
+            //   },
+            //   {}
+            // );
             const somatorioNotas = Object.values(notas).reduce(
-              (acc: { [key: string]: number }, usuarioNotas: any) => {
+              (
+                acc: { [key: string]: number },
+                usuarioNotas: { [key: string]: number }
+              ) => {
                 Object.keys(usuarioNotas).forEach((estatistica) => {
                   acc[estatistica] = (acc[estatistica] || 0) + usuarioNotas[estatistica];
                 });
@@ -35,6 +47,7 @@ export const useJogadoresEstatisticas = () => {
               },
               {}
             );
+            
     
             return {
               id: key,
