@@ -79,7 +79,6 @@ const useNotas = () => {
     }));
   };
   
-
   const handleSubmit = async () => {
     if (!user) {
       setModalConfig({
@@ -90,15 +89,19 @@ const useNotas = () => {
       });
       return;
     }
-
+  
     try {
       const updates: { [key: string]: { [key: string]: number } } = {};
+  
       Object.keys(notas).forEach((jogadorId) => {
-        updates[`/jogadores/${jogadorId}/notas`] = notas[jogadorId];
+        const notaAtual = notas[jogadorId]; 
+        const jogadorNotasPath = `/jogadores/${jogadorId}/notas/${user.uid}`; 
+  
+        updates[jogadorNotasPath] = notaAtual; 
       });
-
-      await update(ref(database), updates);
-
+  
+      await update(ref(database), updates); 
+  
       setModalConfig({
         title: "Sucesso",
         message: "Notas salvas com sucesso!",
