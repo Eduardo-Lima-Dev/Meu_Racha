@@ -17,6 +17,10 @@ const useJogadores = () => {
 
   const auth = getAuth(app);
 
+  const isAuthenticated = () => {
+    return auth.currentUser !== null;
+  };
+
   useEffect(() => {
     const jogadoresRef = ref(database, "jogadores");
     const authRef = ref(database, "auth_votos/liberado");
@@ -35,9 +39,13 @@ const useJogadores = () => {
   }, []);
 
   const toggleVotacao = async () => {
+    if (!isAuthenticated()) {
+      setMensagem("Usuário não autenticado.");
+      return;
+    }
     try {
       const novaLiberacao = !votacaoLiberada;
-  
+
       const updates: { [key: string]: boolean | object } = {
         liberado: novaLiberacao,
       };
@@ -49,7 +57,7 @@ const useJogadores = () => {
       await update(ref(database, "auth_votos"), updates);
 
       setVotacaoLiberada(novaLiberacao);
-  
+
       if (!novaLiberacao) {
         console.log("Votação bloqueada e usuários resetados.");
       } else {
@@ -59,7 +67,6 @@ const useJogadores = () => {
       console.error("Erro ao atualizar status de votação:", error);
     }
   };
-  
 
   const logout = async (router: { push: (path: string) => void }) => {
     try {
@@ -73,6 +80,10 @@ const useJogadores = () => {
 
   const addJogador = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated()) {
+      setMensagem("Usuário não autenticado.");
+      return;
+    }
     try {
       const jogadoresRef = ref(database, "jogadores");
       await push(jogadoresRef, {
@@ -106,6 +117,10 @@ const useJogadores = () => {
   };
 
   const saveUpdates = async () => {
+    if (!isAuthenticated()) {
+      setMensagem("Usuário não autenticado.");
+      return;
+    }
     try {
       const updates = Object.keys(modifiedJogadores).map(async (id) => {
         const jogadorRef = ref(database, `jogadores/${id}`);
@@ -121,6 +136,10 @@ const useJogadores = () => {
   };
 
   const clearJogadores = async () => {
+    if (!isAuthenticated()) {
+      setMensagem("Usuário não autenticado.");
+      return;
+    }
     try {
       const jogadoresRef = ref(database, "jogadores");
       await remove(jogadoresRef);
@@ -132,6 +151,10 @@ const useJogadores = () => {
   };
 
   const clearStars = async () => {
+    if (!isAuthenticated()) {
+      setMensagem("Usuário não autenticado.");
+      return;
+    }
     try {
       const updates: { [key: string]: { votos: { userId: string; vote: number }[] } } = {};
       jogadores.forEach((jogador) => {
@@ -146,7 +169,7 @@ const useJogadores = () => {
   };
 
   return {
-    isAuthenticated: true,
+    isAuthenticated,
     nome,
     assistencias,
     gols,

@@ -34,13 +34,13 @@ const AdminDashboard = () => {
   } = useJogadores();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated() === false) {
       router.push("/login");
     }
   }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return (
