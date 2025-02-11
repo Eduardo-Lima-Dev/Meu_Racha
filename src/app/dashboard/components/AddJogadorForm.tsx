@@ -27,7 +27,6 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
   onGolsChange,
   onSubmit,
   mensagem,
-  clearJogadores,
   clearStars,
   saveUpdates,
 }) => {
@@ -79,9 +78,6 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
             Adicionar Jogador
           </Button>
           <div className="flex justify-center space-x-4 w-full max-w-md mb-4">
-            <Button onClick={clearJogadores} className="w-full mt-4" variant="destructive">
-              Limpar Jogadores
-            </Button>
             <Button onClick={clearStars} className="w-full mt-4 bg-yellow-500 text-white">
               Limpar Estrelas
             </Button>
