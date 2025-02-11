@@ -146,6 +146,7 @@ const useJogadores = () => {
   };
 
   return {
+    isAuthenticated: true,
     nome,
     assistencias,
     gols,
