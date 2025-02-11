@@ -1,16 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
 interface TopBarProps {
   title: string;
-  userName: string;
-  onLogout: () => void;
 }
 
-export default function TopBar({ title, userName, onLogout }: TopBarProps) {
+export default function TopBar({ title }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserName(user.displayName || "Usuário");
+      } else {
+        setUserName(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    const auth = getAuth();
+    try {
+      await signOut(auth);
+      console.log("Usuário deslogado com sucesso!");
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Erro ao deslogar:", error);
+    }
+  };
+
+  const handleLogin = () => {
+    window.location.href = "/login";
+  };
 
   return (
     <>
@@ -51,9 +79,11 @@ export default function TopBar({ title, userName, onLogout }: TopBarProps) {
             <div className="h-10 w-10 bg-gray-700 rounded-full flex items-center justify-center">
               <User size={20} className="text-white" />
             </div>
-            <span className="text-lg font-medium text-gray-900 mt-2">
-              {userName}
-            </span>
+            {userName && (
+              <span className="text-lg font-medium text-gray-900 mt-2">
+                {userName}
+              </span>
+            )}
           </div>
         </div>
 
@@ -70,12 +100,21 @@ export default function TopBar({ title, userName, onLogout }: TopBarProps) {
           <Link href="/perfil" className="menu-item">
             Perfil
           </Link>
-          <button
-            onClick={onLogout}
-            className="menu-item text-red-500 hover:bg-red-600"
-          >
-            Logout
-          </button>
+          {userName ? (
+            <button
+              onClick={handleLogout}
+              className="menu-item text-red-500 hover:bg-red-600"
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="menu-item text-blue-500 hover:bg-blue-600"
+            >
+              Login
+            </button>
+          )}
         </nav>
       </div>
 
@@ -89,6 +128,12 @@ export default function TopBar({ title, userName, onLogout }: TopBarProps) {
         }
         .menu-item:hover {
           background: rgba(214, 89, 89, 0.5);
+        }
+        .menu-item.text-red-500:hover {
+          background: rgba(214, 89, 89, 0.5);
+        }
+        .menu-item.text-blue-500:hover {
+          background: rgba(59, 130, 246, 0.5);
         }
       `}</style>
     </>
