@@ -27,12 +27,11 @@ const UserLogin = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, senha);
       const userId = userCredential.user.uid;
 
-      // Defina o token e userId no cookie após o login bem-sucedido
       const token = await userCredential.user.getIdToken();
       Cookies.set("token", token);
       Cookies.set("userId", userId);
-      Cookies.set("isAuthenticated", "false"); // Defina isAuthenticated como false
-      router.push("/votos");
+      Cookies.set("isAuthenticated", "false"); 
+      router.push("/");
     } catch (error) {
       console.error("Erro no login:", error);
       setErro("Credenciais inválidas. Por favor, tente novamente.");
@@ -49,10 +48,9 @@ const UserLogin = () => {
         nome,
         email,
         role,
-        isAuthenticated: false, // Defina isAuthenticated como false
+        isAuthenticated: false,
       });
 
-      // Defina o token e userId no cookie após o cadastro bem-sucedido
       const token = await userCredential.user.getIdToken();
       Cookies.set("token", token);
       Cookies.set("userId", userId);
