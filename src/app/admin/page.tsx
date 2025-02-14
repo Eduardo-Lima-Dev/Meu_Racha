@@ -8,6 +8,7 @@ import { app } from "../../config/firebaseConfig";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { FaArrowLeft } from "react-icons/fa";
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -39,12 +40,13 @@ const AdminLogin: React.FC = () => {
   return (
     <div className="flex items-center justify-center min-h-screen">
 
-      <Button
-        onClick={() => router.push("/")}
-        className="absolute top-4 left-4"
+      <button
+        onClick={() => router.back()}
+        className="absolute top-6 left-6 text-gray-700 hover:text-gray-900 flex items-center gap-2"
       >
-        Home
-      </Button>
+        <FaArrowLeft className="text-xl" />
+        <span className="text-lg">Voltar</span>
+      </button>
 
       <Card className="w-full max-w-md">
         <CardHeader>
