@@ -9,17 +9,17 @@ interface TopBarProps {
   userName: string;
 }
 
-export default function TopBar({ title }: TopBarProps) {
+export default function TopBar({ title, userName }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userName, setUserName] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserName(user.displayName || "Usuário");
+        setCurrentUserName(user.displayName || "Usuário");
       } else {
-        setUserName(null);
+        setCurrentUserName(null);
       }
     });
 
@@ -80,9 +80,9 @@ export default function TopBar({ title }: TopBarProps) {
             <div className="h-10 w-10 bg-gray-700 rounded-full flex items-center justify-center">
               <User size={20} className="text-white" />
             </div>
-            {userName && (
+            {currentUserName && (
               <span className="text-lg font-medium text-gray-900 mt-2">
-                {userName}
+                {currentUserName}
               </span>
             )}
           </div>
