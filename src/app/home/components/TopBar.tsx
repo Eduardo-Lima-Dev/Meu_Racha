@@ -6,10 +6,9 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
 interface TopBarProps {
   title: string;
-  userName: string;
 }
 
-export default function TopBar({ title, userName }: TopBarProps) {
+export default function TopBar({ title }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
@@ -101,7 +100,7 @@ export default function TopBar({ title, userName }: TopBarProps) {
           <Link href="/perfil" className="menu-item">
             Perfil
           </Link>
-          {userName ? (
+          {currentUserName ? (
             <button
               onClick={handleLogout}
               className="menu-item text-red-500 hover:bg-red-600"

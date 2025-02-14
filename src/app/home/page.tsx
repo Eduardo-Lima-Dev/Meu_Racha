@@ -18,7 +18,7 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <TopBar title="Ranking de Jogadores" userName="User" />
+      <TopBar title="Ranking de Jogadores"/>
 
       {error && <p className="text-center text-red-500">{error}</p>}
       {!error && <Ranking jogadores={jogadores} categorias={categorias} />}
