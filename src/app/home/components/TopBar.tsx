@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
 interface TopBarProps {
   title: string;
+  userName: string;
 }
 
 export default function TopBar({ title }: TopBarProps) {
