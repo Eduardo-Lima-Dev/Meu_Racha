@@ -4,8 +4,8 @@ import React from "react";
 import GraficoEstatisticas from "./components/GraficoEstatisticas";
 import FiltroJogador from "./components/FiltroJogador";
 import { useJogadoresEstatisticas } from "./hooks/useJogadoresEstatisticas";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { FaArrowLeft } from "react-icons/fa";
 
 const EstatisticasJogador: React.FC = () => {
   const {
@@ -33,7 +33,15 @@ const EstatisticasJogador: React.FC = () => {
     );
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-6">
+    <div className="relative flex flex-col items-center justify-center h-screen space-y-6">
+      <button
+        onClick={() => router.back()}
+        className="absolute top-6 left-6 text-gray-700 hover:text-gray-900 flex items-center gap-2"
+      >
+        <FaArrowLeft className="text-xl" />
+        <span className="text-lg">Voltar</span>
+      </button>
+
       <h1 className="text-3xl font-bold text-center">Estatísticas do Jogador</h1>
       <div className="w-full max-w-md">
         <FiltroJogador
@@ -55,14 +63,6 @@ const EstatisticasJogador: React.FC = () => {
             ]}
           />
         )}
-      </div>
-      <div className="flex space-x-4 mt-6">
-        <Button onClick={() => router.push("/")} className="bg-black text-white">
-          Ir para Home
-        </Button>
-        <Button onClick={() => router.push("/notas")} variant="outline">
-          Ir para Notas
-        </Button>
       </div>
     </div>
   );
