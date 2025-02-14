@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import useNotas from "./hooks/useNotas";
 import ModalVotacao, { useModalVotacao } from "./modal/modalVotação";
 
@@ -13,20 +12,20 @@ const NotasJogador: React.FC = () => {
     notas,
     handleNotaChange,
     handleSubmit,
+    modalConfig,
+    handleCloseModal, 
   } = useNotas();
 
   const [paginaAtual, setPaginaAtual] = useState(0);
-  const router = useRouter();
   const { mostrarModal, closeModal } = useModalVotacao();
 
   const jogadorAtual = jogadores[paginaAtual];
   const ehUltimoJogador = paginaAtual === jogadores.length - 1;
 
-  const handleProximo = () => {
+  const handleProximo = async () => {
     if (ehUltimoJogador) {
-      handleSubmit();
+      await handleSubmit();
     } else {
-      handleSubmit();
       setPaginaAtual((prev) => prev + 1);
     }
   };
@@ -48,6 +47,19 @@ const NotasJogador: React.FC = () => {
   return (
     <>
       {mostrarModal && <ModalVotacao onClose={closeModal} />}
+
+      {modalConfig.visible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80 space-y-4">
+            <h2 className="text-lg font-bold">{modalConfig.title}</h2>
+            <p className="text-sm text-gray-600">{modalConfig.message}</p>
+            <Button onClick={handleCloseModal} className="w-full">
+              OK
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col items-center justify-center h-screen space-y-6">
         <h1 className="text-3xl font-bold">Notas dos Jogadores</h1>
         <p className="text-sm text-gray-500">
@@ -91,14 +103,6 @@ const NotasJogador: React.FC = () => {
         </div>
         <div className="text-sm text-gray-500">
           Jogador {paginaAtual + 1} de {jogadores.length}
-        </div>
-        <div className="flex space-x-4 mt-6">
-          <Button onClick={() => router.push("/")} className=" text-white">
-            Ir para Home
-          </Button>
-          <Button onClick={() => router.push("/graficos")} variant="outline">
-            Ir para Gráficos
-          </Button>
         </div>
       </div>
     </>
