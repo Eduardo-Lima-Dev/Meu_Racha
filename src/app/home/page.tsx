@@ -8,15 +8,20 @@ const Home = () => {
   const { jogadores, loading, error } = useJogadores();
   const categorias = [5, 4, 3, 2, 1];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg font-semibold">Carregando jogadores...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4">
-        <TopBar title="Ranking de Jogadores" userName="Duduh" onLogout={() => console.log("Logout")} />
+      <TopBar title="Ranking de Jogadores" userName="User" />
 
-        {loading && <p className="text-center">Carregando jogadores...</p>}
-        {error && <p className="text-center text-red-500">{error}</p>}
-        {!loading && !error && (
-          <Ranking jogadores={jogadores} categorias={categorias} />
-        )}
+      {error && <p className="text-center text-red-500">{error}</p>}
+      {!error && <Ranking jogadores={jogadores} categorias={categorias} />}
     </div>
   );
 };
