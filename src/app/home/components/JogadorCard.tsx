@@ -29,10 +29,10 @@ const JogadorCard: React.FC<{ jogador: Jogador }> = ({ jogador }) => {
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           {jogador.nome}
-          {renderStars(media)}
+          {renderStars(media.media)}
         </CardTitle>
         <CardDescription>
-          Média de Estrelas: {media.toFixed(2)}
+          Média de Estrelas: {media.media.toFixed(2)}
         </CardDescription>
       </CardHeader>
       <CardContent>

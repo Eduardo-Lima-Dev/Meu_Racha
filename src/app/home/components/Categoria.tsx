@@ -4,8 +4,13 @@ import { calcularMedia } from "../utils/calcularMedia";
 
 const Categoria: React.FC<{ categoria: number; jogadores: Jogador[] }> = ({ categoria, jogadores }) => {
   const jogadoresFiltrados = jogadores
-    .filter((jogador) => Math.round(calcularMedia(jogador.votos)) === categoria)
-    .sort((a, b) => calcularMedia(b.votos) - calcularMedia(a.votos));
+    .map((jogador) => ({
+      ...jogador,
+      media: calcularMedia(jogador.votos).media, // Média exata para exibição
+      categoriaCalculada: calcularMedia(jogador.votos).categoria, // Categoria arredondada para baixo
+    }))
+    .filter((jogador) => jogador.categoriaCalculada === categoria) // Filtra jogadores na categoria correta
+    .sort((a, b) => b.media - a.media); // Ordena pela média exata
 
   return (
     <div className="mb-6">
