@@ -124,9 +124,10 @@ const useNotas = () => {
   const handleCloseModal = () => {
     setModalConfig((prev) => ({ ...prev, visible: false }));
     if (modalConfig.icon === "success") {
-      router.push("/");
+      router.push("/graficos");
     }
   };
+  
 
   return {
     jogadores,
