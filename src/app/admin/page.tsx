@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { FaArrowLeft } from "react-icons/fa";
+import Cookies from "js-cookie";
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -29,6 +30,9 @@ const AdminLogin: React.FC = () => {
         await auth.signOut();
         setErro("Acesso negado. Apenas contas sem role podem acessar.");
       } else {
+        Cookies.set("token", await userCredential.user.getIdToken());
+        Cookies.set("userId", userId);
+        Cookies.set("isAuthenticated", "true");  
         router.push("/dashboard");
       }
     } catch (error) {

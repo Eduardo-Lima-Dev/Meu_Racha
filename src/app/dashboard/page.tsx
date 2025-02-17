@@ -34,13 +34,15 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!(await isAuthenticated())) {
+      const isAuth = await isAuthenticated();
+      
+      if (!isAuth) {
         router.push("/admin");
       }
     };
-
+  
     checkAuth();
-  }, [isAuthenticated, router]);
+  }, [router, isAuthenticated]);  
 
   return (
     <div className="w-full min-h-screen flex flex-col p-4">
