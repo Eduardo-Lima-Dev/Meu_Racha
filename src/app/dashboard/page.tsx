@@ -2,17 +2,16 @@
 
 import { useEffect } from "react";
 import useJogadores from "./hooks/useJogadores";
-import Header from "./components/Header";
 import ControleVotacao from "./components/ControleVotacao";
 import AddJogadorForm from "./components/AddJogadorForm";
 import JogadoresList from "./components/JogadoresList";
+import TopBar from "../home/components/TopBar";
 import { useRouter } from "next/navigation";
 
 const AdminDashboard = () => {
   const router = useRouter();
   const {
     isAuthenticated,
-    logout,
     votacaoLiberada,
     toggleVotacao,
     nome,
@@ -34,39 +33,49 @@ const AdminDashboard = () => {
   } = useJogadores();
 
   useEffect(() => {
-    if (isAuthenticated() === false) {
-      router.push("/login");
-    }
+    const checkAuth = async () => {
+      if (!(await isAuthenticated())) {
+        router.push("/admin");
+      }
+    };
+
+    checkAuth();
   }, [isAuthenticated, router]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <Header onLogout={() => logout(router)} />
-      <ControleVotacao votacaoLiberada={votacaoLiberada} onToggleVotacao={toggleVotacao} />
-      <AddJogadorForm
-        nome={nome}
-        assistencias={assistencias}
-        gols={gols}
-        onNomeChange={(e) => setNome(e.target.value)}
-        onAssistenciasChange={(e) => setAssistencias(Number(e.target.value))}
-        onGolsChange={(e) => setGols(Number(e.target.value))}
-        onSubmit={addJogador}
-        mensagem={mensagem}
-        clearJogadores={clearJogadores}
-        clearStars={clearStars}
-        saveUpdates={saveUpdates}
-      />
-      <JogadoresList
-        jogadores={jogadores}
-        editStats={editStats}
-        modifiedJogadores={modifiedJogadores}
-        onToggleStats={toggleEditStats}
-        onUpdateJogador={handleUpdateJogador}
-      />
+    <div className="w-full min-h-screen flex flex-col p-4">
+      <TopBar title="Painel Administrativo" isAdmin={true} />
+
+      <div className="flex flex-col md:flex-row w-full justify-center gap-6 mt-6 px-6">
+        <div className="max-w-md w-full">
+          <ControleVotacao votacaoLiberada={votacaoLiberada} onToggleVotacao={toggleVotacao} />
+        </div>
+        <div className="max-w-md w-full">
+          <AddJogadorForm
+            nome={nome}
+            assistencias={assistencias}
+            gols={gols}
+            onNomeChange={(e) => setNome(e.target.value)}
+            onAssistenciasChange={(e) => setAssistencias(Number(e.target.value))}
+            onGolsChange={(e) => setGols(Number(e.target.value))}
+            onSubmit={addJogador}
+            mensagem={mensagem}
+            clearJogadores={clearJogadores}
+            clearStars={clearStars}
+            saveUpdates={saveUpdates}
+          />
+        </div>
+      </div>
+
+      <div className="w-full px-6 mt-6">
+        <JogadoresList
+          jogadores={jogadores}
+          editStats={editStats}
+          modifiedJogadores={modifiedJogadores}
+          onToggleStats={toggleEditStats}
+          onUpdateJogador={handleUpdateJogador}
+        />
+      </div>
     </div>
   );
 };

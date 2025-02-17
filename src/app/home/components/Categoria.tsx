@@ -6,11 +6,11 @@ const Categoria: React.FC<{ categoria: number; jogadores: Jogador[] }> = ({ cate
   const jogadoresFiltrados = jogadores
     .map((jogador) => ({
       ...jogador,
-      media: calcularMedia(jogador.votos).media, // Média exata para exibição
-      categoriaCalculada: calcularMedia(jogador.votos).categoria, // Categoria arredondada para baixo
+      media: calcularMedia(jogador.votos).media, 
+      categoriaCalculada: calcularMedia(jogador.votos).categoria, 
     }))
-    .filter((jogador) => jogador.categoriaCalculada === categoria) // Filtra jogadores na categoria correta
-    .sort((a, b) => b.media - a.media); // Ordena pela média exata
+    .filter((jogador) => jogador.categoriaCalculada === categoria) 
+    .sort((a, b) => b.media - a.media);
 
   return (
     <div className="mb-6">

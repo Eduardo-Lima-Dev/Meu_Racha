@@ -6,9 +6,10 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 
 interface TopBarProps {
   title: string;
+  isAdmin?: boolean;
 }
 
-export default function TopBar({ title }: TopBarProps) {
+export default function TopBar({ title, isAdmin = false }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
@@ -94,8 +95,8 @@ export default function TopBar({ title }: TopBarProps) {
           <Link href="/graficos" className="menu-item">
             Estatísticas
           </Link>
-          <Link href="/admin" className="menu-item">
-            Administração
+          <Link href={isAdmin ? "/" : "/admin"} className="menu-item">
+            {isAdmin ? "Home" : "Administração"}
           </Link>
           <Link href="/perfil" className="menu-item">
             Perfil

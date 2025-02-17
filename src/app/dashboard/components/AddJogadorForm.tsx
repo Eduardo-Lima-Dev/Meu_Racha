@@ -32,7 +32,7 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
 }) => {
   return (
     <Card className="w-full max-w-md mb-8">
-      <CardHeader>
+      <CardHeader className="flex items-center justify-between">
         <CardTitle>Adicionar Novo Jogador</CardTitle>
       </CardHeader>
       <CardContent>
