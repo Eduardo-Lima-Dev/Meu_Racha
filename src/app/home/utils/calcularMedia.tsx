@@ -8,7 +8,7 @@ export const calcularMedia = (votos: { userId: string; vote: number }[] | undefi
   const media = total / votosValidos.length;
 
   return {
-    media, // Mostra a média exata
-    categoria: Math.floor(media), // Arredonda para baixo para determinar a categoria
+    media, 
+    categoria: Math.floor(media), 
   };
 };
