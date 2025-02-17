@@ -101,6 +101,11 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
           <Link href="/perfil" className="menu-item">
             Perfil
           </Link>
+          {isAdmin && (
+            <Link href="/times" className="menu-item">
+              Times
+            </Link>
+          )}
           {currentUserName ? (
             <button
               onClick={handleLogout}
