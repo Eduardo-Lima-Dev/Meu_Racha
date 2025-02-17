@@ -47,25 +47,25 @@ const AdminDashboard = () => {
       <TopBar title="Painel Administrativo" isAdmin={true} />
 
       <div className="flex flex-col md:flex-row w-full justify-center gap-6 mt-6 px-6">
-      <div className="max-w-md w-full">
-        <ControleVotacao votacaoLiberada={votacaoLiberada} onToggleVotacao={toggleVotacao} />
+        <div className="max-w-md w-full">
+          <ControleVotacao votacaoLiberada={votacaoLiberada} onToggleVotacao={toggleVotacao} />
+        </div>
+        <div className="max-w-md w-full">
+          <AddJogadorForm
+            nome={nome}
+            assistencias={assistencias}
+            gols={gols}
+            onNomeChange={(e) => setNome(e.target.value)}
+            onAssistenciasChange={(e) => setAssistencias(Number(e.target.value))}
+            onGolsChange={(e) => setGols(Number(e.target.value))}
+            onSubmit={addJogador}
+            mensagem={mensagem}
+            clearJogadores={clearJogadores}
+            clearStars={clearStars}
+            saveUpdates={saveUpdates}
+          />
+        </div>
       </div>
-      <div className="max-w-md w-full">
-        <AddJogadorForm
-          nome={nome}
-          assistencias={assistencias}
-          gols={gols}
-          onNomeChange={(e) => setNome(e.target.value)}
-          onAssistenciasChange={(e) => setAssistencias(Number(e.target.value))}
-          onGolsChange={(e) => setGols(Number(e.target.value))}
-          onSubmit={addJogador}
-          mensagem={mensagem}
-          clearJogadores={clearJogadores}
-          clearStars={clearStars}
-          saveUpdates={saveUpdates}
-        />
-      </div>
-</div>
 
       <div className="w-full px-6 mt-6">
         <JogadoresList
