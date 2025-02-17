@@ -42,27 +42,67 @@ const JogadoresList: React.FC<JogadoresListProps> = ({
                     <label htmlFor={`assistencias-${jogador.id}`} className="block text-sm font-medium">
                       Assistências
                     </label>
-                    <Input
-                      id={`assistencias-${jogador.id}`}
-                      type="number"
-                      value={modifiedJogadores[jogador.id]?.assistencias ?? jogador.assistencias}
-                      onChange={(e) =>
-                        onUpdateJogador(jogador.id, "assistencias", Number(e.target.value))
-                      }
-                    />
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="w-10 h-10 p-0"
+                        onClick={() => onUpdateJogador(jogador.id, "assistencias", Math.max(0, (modifiedJogadores[jogador.id]?.assistencias ?? jogador.assistencias) - 1))}
+                        >
+                        -
+                      </Button>
+                      <Input
+                        id={`assistencias-${jogador.id}`}
+                        type="number"
+                        value={modifiedJogadores[jogador.id]?.assistencias ?? jogador.assistencias}
+                        onChange={(e) =>
+                          onUpdateJogador(jogador.id, "assistencias", Number(e.target.value))
+                        }
+                        className="text-center"
+                      />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="w-10 h-10 p-0"
+                        onClick={() => onUpdateJogador(jogador.id, "assistencias", Math.max(0, (modifiedJogadores[jogador.id]?.assistencias ?? jogador.assistencias) + 1))}
+                        >
+                        +
+                      </Button>
+                    </div>
                   </div>
                   <div>
                     <label htmlFor={`gols-${jogador.id}`} className="block text-sm font-medium">
                       Gols
                     </label>
-                    <Input
-                      id={`gols-${jogador.id}`}
-                      type="number"
-                      value={modifiedJogadores[jogador.id]?.gols ?? jogador.gols}
-                      onChange={(e) =>
-                        onUpdateJogador(jogador.id, "gols", Number(e.target.value))
-                      }
-                    />
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="w-10 h-10 p-0"
+                        onClick={() => onUpdateJogador(jogador.id, "gols", Math.max(0, (modifiedJogadores[jogador.id]?.gols ?? jogador.gols) - 1))}
+                        >
+                        -
+                      </Button>
+                    
+                      <Input
+                        id={`gols-${jogador.id}`}
+                        type="number"
+                        value={modifiedJogadores[jogador.id]?.gols ?? jogador.gols}
+                        onChange={(e) =>
+                          onUpdateJogador(jogador.id, "gols", Number(e.target.value))
+                        }
+                        className="text-center"
+                      />
+
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="w-10 h-10 p-0"
+                        onClick={() => onUpdateJogador(jogador.id, "gols", Math.max(0, (modifiedJogadores[jogador.id]?.gols ?? jogador.gols) + 1))}
+                        >
+                        +
+                      </Button>
+                    </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
