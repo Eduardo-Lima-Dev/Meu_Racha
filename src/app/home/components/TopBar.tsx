@@ -95,7 +95,7 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
           <Link href="/graficos" className="menu-item">
             Estatísticas
           </Link>
-          <Link href={isAdmin ? "/" : "/admin"} className="menu-item">
+          <Link href={isAdmin ? "/" : "/dashboard"} className="menu-item">
             {isAdmin ? "Home" : "Administração"}
           </Link>
           <Link href="/perfil" className="menu-item">
