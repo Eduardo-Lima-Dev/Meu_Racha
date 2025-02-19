@@ -33,6 +33,14 @@ const Home = () => {
 
   const mostrarTitulosEstrelas = searchQuery === "" && filter === "estrela";
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg font-semibold">Carregando jogadores...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4">
       <TopBar title="Ranking de Jogadores" isAdmin={false} />

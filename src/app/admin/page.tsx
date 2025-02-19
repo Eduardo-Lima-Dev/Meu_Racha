@@ -26,7 +26,6 @@ const AdminLogin: React.FC = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, senha);
       const userId = userCredential.user.uid;
-
       const userDocRef = doc(db, "users", userId);
       const userDoc = await getDoc(userDocRef);
 
