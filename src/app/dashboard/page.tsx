@@ -49,11 +49,11 @@ const AdminDashboard = () => {
     <div className="w-full min-h-screen flex flex-col p-4">
       <TopBar title="Painel Administrativo" isAdmin={true} />
 
-      <div className="flex flex-col md:flex-row w-full justify-center gap-6 mt-6 px-6">
-        <div className="max-w-md w-full">
+      <div className="flex flex-col md:flex-row w-full justify-center items-center md:items-start gap-6 mt-6 px-6">
+        <div className="max-w-md w-full flex flex-col items-center md:items-start">
           <ControleVotacao votacaoLiberada={votacaoLiberada} onToggleVotacao={toggleVotacao} />
         </div>
-        <div className="max-w-md w-full">
+        <div className="max-w-md w-full flex flex-col items-center md:items-start">
           <AddJogadorForm
             nome={nome}
             assistencias={assistencias}
