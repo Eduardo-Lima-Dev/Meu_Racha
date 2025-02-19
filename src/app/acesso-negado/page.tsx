@@ -47,10 +47,10 @@ export default function AcessoNegado() {
         </div>
         <div className="mt-12 text-center">
           <Link
-            href="/admin"
+            href="/"
             className="text-[#1B2A4E] hover:underline text-lg font-semibold"
           >
-            Login Administrativo
+            Home
           </Link>
         </div>
       </main>

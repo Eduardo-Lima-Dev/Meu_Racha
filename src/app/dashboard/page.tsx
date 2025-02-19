@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 import useJogadores from "./hooks/useJogadores";
 import ControleVotacao from "./components/ControleVotacao";
 import AddJogadorForm from "./components/AddJogadorForm";
@@ -11,7 +12,6 @@ import { useRouter } from "next/navigation";
 const AdminDashboard = () => {
   const router = useRouter();
   const {
-    isAuthenticated,
     votacaoLiberada,
     toggleVotacao,
     nome,
@@ -33,16 +33,17 @@ const AdminDashboard = () => {
   } = useJogadores();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const isAuth = await isAuthenticated();
-      
-      if (!isAuth) {
-        router.push("/admin");
+    const checkAuth = () => {
+      const role = Cookies.get("role");
+      const token = Cookies.get("token");
+  
+      if (!token || role !== "admin") {
+        router.push("/acesso-negado");
       }
     };
   
     checkAuth();
-  }, [router, isAuthenticated]);  
+  }, [router]);  
 
   return (
     <div className="w-full min-h-screen flex flex-col p-4">

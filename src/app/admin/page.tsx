@@ -3,18 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { app } from "../../config/firebaseConfig";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { FaArrowLeft } from "react-icons/fa";
 import Cookies from "js-cookie";
+import Link from "next/link";
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [erro, setErro] = useState("");
+  const [erro, setErro] = useState<React.ReactNode>("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -33,20 +34,26 @@ const AdminLogin: React.FC = () => {
         const role = userDoc.data()?.role;
         console.log("User Role:", role);
 
-        if (role === "admin") {
-          Cookies.set("role", role);
-          Cookies.set("token", await userCredential.user.getIdToken());
-          Cookies.set("userId", userId);
-          Cookies.set("isAuthenticated", "true");
-          router.push("/dashboard");
-        } 
+        if (role !== "admin") {
+          setErro(
+            <>
+              Você não tem acesso. Vá para{" "}
+              <Link href="/login" className="text-blue-500 underline">
+                Login
+              </Link>.
+            </>
+          );
+          return;
+        }
+
+        Cookies.set("role", role, { path: "/", sameSite: "strict", secure: true });
+        Cookies.set("token", await userCredential.user.getIdToken(), { path: "/", sameSite: "strict", secure: true });
+        Cookies.set("userId", userId, { path: "/", sameSite: "strict", secure: true });
+        Cookies.set("isAuthenticated", "true", { path: "/", sameSite: "strict", secure: true });
+
+        router.push("/dashboard"); 
       } else {
-        await setDoc(userDocRef, { role: "user" });
-        Cookies.set("token", await userCredential.user.getIdToken());
-        Cookies.set("userId", userId);
-        Cookies.set("role", "user");
-        Cookies.set("isAuthenticated", "true");
-        router.push("/");
+        setErro("Erro: Conta sem permissões definidas.");
       }
     } catch (error) {
       console.error("Erro no login:", error);

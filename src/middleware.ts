@@ -1,77 +1,28 @@
-// import { NextResponse } from 'next/server';
-// import type { NextRequest } from 'next/server';
-
-// export function middleware(req: NextRequest) {
-//   const token = req.cookies.get('token');
-  
-//   // Se o token não existir, redireciona para /admin (login)
-//   if (!token) {
-//     return NextResponse.redirect(new URL('/admin', req.url));
-//   }
-
-//   const userRole = getUserRoleFromToken(token.value);
-
-//   function getUserRoleFromToken(token: string): string {
-//     const decodedToken = JSON.parse(atob(token.split('.')[1]));
-//     return decodedToken.role;
-//   }
-
-//   // Se o usuário não for admin, redireciona para /acesso-negado
-//   if (userRole !== 'admin') {
-//     return NextResponse.redirect(new URL('/acesso-negado', req.url));
-//   }
-
-//   // Se for admin, permite o acesso às rotas
-//   return NextResponse.next();
-// }
-
-// export const config = {
-//   matcher: ['/votos', '/dashboard'], // Protege as rotas de votos e dashboard
-// };
-
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get('token');
+  console.log("Todos os cookies recebidos:", req.cookies.getAll());
+
+  const token = req.cookies.get("token")?.value;
+  const userRole = req.cookies.get("role")?.value;
+
+  console.log("Middleware - Token recebido:", token);
+  console.log("Middleware - Role recebida:", userRole);
 
   if (!token) {
-    return NextResponse.redirect(new URL('/admin', req.url));
+    console.log("Redirecionando para /admin por falta de token");
+    return NextResponse.redirect(new URL("/admin", req.url));
   }
 
-  const userRole = req.cookies.get('role')?.value; 
-  if (userRole !== 'user') {
-    return NextResponse.redirect(new URL('/acesso-negado', req.url));
-  } 
+  if (!userRole || userRole !== "admin") {
+    console.log("Redirecionando para /acesso-negado por role inválida");
+    return NextResponse.redirect(new URL("/acesso-negado", req.url));
+  }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/votos', '/dashboard'], // Protege as rotas de votos e dashboard
+  matcher: ["/votos", "/dashboard", "/times"],
 };
-//------------------------------------------
-// import { NextResponse } from 'next/server';
-// import type { NextRequest } from 'next/server';
-
-// export function middleware(req: NextRequest) {
-//   const token = req.cookies.get('token');
-//   const role = req.cookies.get('role');  // Pegando o role diretamente do cookie
-
-//   // Se não houver token, redireciona para /admin (login)
-//   if (!token) {
-//     return NextResponse.redirect(new URL('/admin', req.url));
-//   }
-
-//   // Se o role for admin, permite o acesso ao /dashboard
-//   if (role?.value === 'admin') {
-//     return NextResponse.next();
-//   }
-
-//   // Se o usuário não for admin, redireciona para /acesso-negado
-//   return NextResponse.redirect(new URL('/acesso-negado', req.url));
-// }
-
-// export const config = {
-//   matcher: ['/votos', '/dashboard'],  // Protege as rotas de votos e dashboard
-// };
