@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import Cookies from "js-cookie";
 
 interface TopBarProps {
   title: string;
@@ -30,6 +31,12 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
     const auth = getAuth();
     try {
       await signOut(auth);
+      Cookies.remove("role", { path: "/" });
+      Cookies.remove("token", { path: "/" });
+      Cookies.remove("userId", { path: "/" });
+      Cookies.remove("isAuthenticated", { path: "/" });
+
+      console.log("Cookies removidos!");
       console.log("Usuário deslogado com sucesso!");
       window.location.href = "/";
     } catch (error) {
@@ -95,12 +102,17 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
           <Link href="/graficos" className="menu-item">
             Estatísticas
           </Link>
-          <Link href={isAdmin ? "/" : "/admin"} className="menu-item">
+          <Link href={isAdmin ? "/" : "/dashboard"} className="menu-item">
             {isAdmin ? "Home" : "Administração"}
           </Link>
           <Link href="/perfil" className="menu-item">
             Perfil
           </Link>
+          {isAdmin && (
+            <Link href="/times" className="menu-item">
+              Times
+            </Link>
+          )}
           {currentUserName ? (
             <button
               onClick={handleLogout}
