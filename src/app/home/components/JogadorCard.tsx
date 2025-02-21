@@ -21,11 +21,14 @@ const renderStars = (average: number) => {
   );
 };
 
-const JogadorCard: React.FC<{ jogador: Jogador }> = ({ jogador }) => {
+const JogadorCard: React.FC<{ jogador: Jogador; isTop?: boolean }> = ({ jogador, isTop = false }) => {
   const media = calcularMedia(jogador.votos);
 
   return (
-    <Card key={jogador.id} className="w-full max-w-xs">
+    <Card
+      key={jogador.id}
+      className={`w-full max-w-xs border-2 ${isTop ? "border-yellow-300 bg-yellow-100 shadow-lg" : "border-gray-200"}`}
+    >
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
           {jogador.nome}
@@ -36,8 +39,8 @@ const JogadorCard: React.FC<{ jogador: Jogador }> = ({ jogador }) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>Assistências: {jogador.assistencias}</p>
         <p>Gols: {jogador.gols}</p>
+        <p>Assistências: {jogador.assistencias}</p>
       </CardContent>
     </Card>
   );

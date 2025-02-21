@@ -26,8 +26,8 @@ const Categoria: React.FC<CategoriaProps> = ({ categoria, jogadores, mostrarTitu
         </h2>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
-        {jogadoresFiltrados.map((jogador) => (
-          <JogadorCard key={jogador.id} jogador={jogador} />
+        {jogadoresFiltrados.map((jogador, index) => (
+          <JogadorCard key={jogador.id} jogador={jogador} isTop={index === 0} />
         ))}
       </div>
     </div>
