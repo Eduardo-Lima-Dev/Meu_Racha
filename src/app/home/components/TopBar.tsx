@@ -8,6 +8,7 @@ import { useAuthStatus } from "../hooks/useAuthStatus";
 
 interface TopBarProps {
   title: string;
+  isAdmin?: boolean;
 }
 
 export default function TopBar({ title }: TopBarProps) {
