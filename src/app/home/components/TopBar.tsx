@@ -36,8 +36,6 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
       Cookies.remove("userId", { path: "/" });
       Cookies.remove("isAuthenticated", { path: "/" });
 
-      console.log("Cookies removidos!");
-      console.log("Usuário deslogado com sucesso!");
       window.location.href = "/";
     } catch (error) {
       console.error("Erro ao deslogar:", error);
