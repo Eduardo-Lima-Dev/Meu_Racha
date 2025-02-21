@@ -1,31 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import Cookies from "js-cookie";
+import { useAuthStatus } from "../hooks/useAuthStatus";
 
 interface TopBarProps {
   title: string;
-  isAdmin?: boolean;
 }
 
-export default function TopBar({ title, isAdmin = false }: TopBarProps) {
+export default function TopBar({ title }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
-
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUserName(user.displayName || "Usuário");
-      } else {
-        setCurrentUserName(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { isAuthenticated, isAdmin, currentUserName } = useAuthStatus(); 
 
   const handleLogout = async () => {
     const auth = getAuth();
@@ -116,7 +103,7 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
               Times
             </Link>
           )}
-          {currentUserName ? (
+          {isAuthenticated ? (
             <button
               onClick={handleLogout}
               className="menu-item text-red-500 hover:bg-red-600"
