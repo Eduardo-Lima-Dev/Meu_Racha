@@ -48,13 +48,13 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 text-gray-900 px-6 py-4 shadow-md rounded-b-lg z-50">
-        <div className="h-10 w-10 overflow-hidden rounded-full">
+      <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 text-gray-900 px-6 py-2 shadow-md rounded-b-lg z-50">
+        <div className="h-15 w-15 overflow-hidden rounded-10">
           <Image
-            src="/logo.png"
+            src="/logo-2.png"
             alt="Logo"
-            width={40}
-            height={40}
+            width={60}
+            height={60}
             className="object-cover"
           />
         </div>
@@ -63,7 +63,7 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
           onClick={() => setMenuOpen(true)}
           className="text-gray-900 hover:text-gray-600"
         >
-          <Menu size={28} />
+          <Menu size={38} />
         </button>
       </div>
 
@@ -100,6 +100,11 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
           <Link href="/graficos" className="menu-item">
             Estatísticas
           </Link>
+          {isAdmin && (
+            <Link href="/notas" className="menu-item">
+              Notas Estatísticas
+            </Link>
+          )}
           <Link href={isAdmin ? "/" : "/dashboard"} className="menu-item">
             {isAdmin ? "Home" : "Administração"}
           </Link>
