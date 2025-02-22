@@ -1,31 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import Cookies from "js-cookie";
+import { useAuthStatus } from "../hooks/useAuthStatus";
 
 interface TopBarProps {
   title: string;
   isAdmin?: boolean;
 }
 
-export default function TopBar({ title, isAdmin = false }: TopBarProps) {
+export default function TopBar({ title }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
-
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUserName(user.displayName || "Usuário");
-      } else {
-        setCurrentUserName(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { isAuthenticated, isAdmin, currentUserName } = useAuthStatus(); 
 
   const handleLogout = async () => {
     const auth = getAuth();
@@ -36,8 +24,6 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
       Cookies.remove("userId", { path: "/" });
       Cookies.remove("isAuthenticated", { path: "/" });
 
-      console.log("Cookies removidos!");
-      console.log("Usuário deslogado com sucesso!");
       window.location.href = "/";
     } catch (error) {
       console.error("Erro ao deslogar:", error);
@@ -50,13 +36,13 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 text-gray-900 px-6 py-4 shadow-md rounded-b-lg z-50">
-        <div className="h-10 w-10 overflow-hidden rounded-full">
+      <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 text-gray-900 px-6 py-2 shadow-md rounded-b-lg z-50">
+        <div className="h-15 w-15 overflow-hidden rounded-10">
           <Image
-            src="/logo.png"
+            src="/logo-2.png"
             alt="Logo"
-            width={40}
-            height={40}
+            width={60}
+            height={60}
             className="object-cover"
           />
         </div>
@@ -65,7 +51,7 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
           onClick={() => setMenuOpen(true)}
           className="text-gray-900 hover:text-gray-600"
         >
-          <Menu size={28} />
+          <Menu size={38} />
         </button>
       </div>
 
@@ -102,6 +88,11 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
           <Link href="/graficos" className="menu-item">
             Estatísticas
           </Link>
+          {isAdmin && (
+            <Link href="/notas" className="menu-item">
+              Notas Estatísticas
+            </Link>
+          )}
           <Link href={isAdmin ? "/" : "/dashboard"} className="menu-item">
             {isAdmin ? "Home" : "Administração"}
           </Link>
@@ -113,7 +104,7 @@ export default function TopBar({ title, isAdmin = false }: TopBarProps) {
               Times
             </Link>
           )}
-          {currentUserName ? (
+          {isAuthenticated ? (
             <button
               onClick={handleLogout}
               className="menu-item text-red-500 hover:bg-red-600"

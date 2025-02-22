@@ -31,7 +31,6 @@ const AdminLogin: React.FC = () => {
 
       if (userDoc.exists()) {
         const role = userDoc.data()?.role;
-        console.log("User Role:", role);
 
         if (role !== "admin") {
           setErro(

@@ -58,11 +58,6 @@ const useJogadores = () => {
 
       setVotacaoLiberada(novaLiberacao);
 
-      if (!novaLiberacao) {
-        console.log("Votação bloqueada e usuários resetados.");
-      } else {
-        console.log("Votação liberada.");
-      }
     } catch (error) {
       console.error("Erro ao atualizar status de votação:", error);
     }
@@ -71,7 +66,6 @@ const useJogadores = () => {
   const logout = async (router: { push: (path: string) => void }) => {
     try {
       await signOut(auth);
-      console.log("Usuário deslogado com sucesso!");
       router.push("/admin");
     } catch (error) {
       console.error("Erro ao deslogar:", error);

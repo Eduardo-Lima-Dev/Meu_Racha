@@ -5,8 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import useNotas from "./hooks/useNotas";
 import ModalVotacao, { useModalVotacao } from "./modal/modalVotação";
+import { FaArrowLeft } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const NotasJogador: React.FC = () => {
+  const router = useRouter();
+
   const {
     jogadores,
     notas,
@@ -59,6 +63,11 @@ const NotasJogador: React.FC = () => {
           </div>
         </div>
       )}
+
+      <button onClick={() => router.back()} className="absolute top-6 left-6 text-gray-700 hover:text-gray-900 flex items-center gap-2">
+        <FaArrowLeft className="text-xl" />
+        <span className="text-lg">Voltar</span>
+      </button>
 
       <div className="flex flex-col items-center justify-center h-screen space-y-6">
         <h1 className="text-3xl font-bold">Notas dos Jogadores</h1>
