@@ -12,18 +12,10 @@ const BotaoCompartilhar: React.FC<BotaoCompartilharProps> = ({ elementId }) => {
       return;
     }
 
-    const originalDisplay = elemento.style.display;
-    const originalGridTemplateColumns = elemento.style.gridTemplateColumns;
-    const originalGap = elemento.style.gap;
-
-    elemento.style.display = "grid";
-    elemento.style.gridTemplateColumns = "repeat(4, 1fr)";
-    elemento.style.gap = "10px";
-
     try {
       const canvas = await html2canvas(elemento, {
         backgroundColor: "white",
-        scale: 4,
+        scale: 2,
         useCORS: true,
         scrollX: 0,
         scrollY: 0,
@@ -31,29 +23,24 @@ const BotaoCompartilhar: React.FC<BotaoCompartilharProps> = ({ elementId }) => {
         windowHeight: elemento.scrollHeight
       });
 
-      elemento.style.display = originalDisplay;
-      elemento.style.gridTemplateColumns = originalGridTemplateColumns;
-      elemento.style.gap = originalGap;
-
       const dateStr = new Date().toLocaleString();
-      const extraHeight = 100; 
-      const sidePadding = 80; 
+      const extraHeight = 50; 
 
       const newCanvas = document.createElement("canvas");
-      newCanvas.width = canvas.width + sidePadding * 2;
+      newCanvas.width = canvas.width;
       newCanvas.height = canvas.height + extraHeight;
       const context = newCanvas.getContext("2d");
       if (context) {
-  
+
         context.fillStyle = "white";
         context.fillRect(0, 0, newCanvas.width, newCanvas.height);
 
         context.fillStyle = "black";
-        context.font = "60px Arial";
+        context.font = "30px Arial";
         context.textAlign = "center";
-        context.fillText(dateStr, newCanvas.width / 2, 10 + 60);
+        context.fillText(dateStr, newCanvas.width / 2, 30);
 
-        context.drawImage(canvas, sidePadding, extraHeight);
+        context.drawImage(canvas, 0, extraHeight);
       }
 
       const imagem = newCanvas.toDataURL("image/png");
