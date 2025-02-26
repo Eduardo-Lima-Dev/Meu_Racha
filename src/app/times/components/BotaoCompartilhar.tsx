@@ -17,33 +17,13 @@ const BotaoCompartilhar: React.FC<BotaoCompartilharProps> = ({ elementId }) => {
         backgroundColor: "white",
         scale: 2,
         useCORS: true,
-        scrollX: 0,
-        scrollY: 0,
+        scrollX: 0, 
+        scrollY: 0, 
         windowWidth: elemento.scrollWidth,
         windowHeight: elemento.scrollHeight
       });
 
-      const dateStr = new Date().toLocaleString();
-      const extraHeight = 50; 
-
-      const newCanvas = document.createElement("canvas");
-      newCanvas.width = canvas.width;
-      newCanvas.height = canvas.height + extraHeight;
-      const context = newCanvas.getContext("2d");
-      if (context) {
-
-        context.fillStyle = "white";
-        context.fillRect(0, 0, newCanvas.width, newCanvas.height);
-
-        context.fillStyle = "black";
-        context.font = "30px Arial";
-        context.textAlign = "center";
-        context.fillText(dateStr, newCanvas.width / 2, 30);
-
-        context.drawImage(canvas, 0, extraHeight);
-      }
-
-      const imagem = newCanvas.toDataURL("image/png");
+      const imagem = canvas.toDataURL("image/png");
 
       const link = document.createElement("a");
       link.href = imagem;
