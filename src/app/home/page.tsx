@@ -5,6 +5,7 @@ import { useJogadores } from "./hooks/useJogadores";
 import Ranking from "./components/Ranking";
 import TopBar from "./components/TopBar";
 import FiltroBusca from "./components/FiltroBusca";
+import ThemeToggle from "@/components/ui/themeToggle";
 
 const Home = () => {
   const { jogadores, loading, error } = useJogadores();
@@ -55,6 +56,8 @@ const Home = () => {
           mostrarTitulosEstrelas={mostrarTitulosEstrelas}
         />
       )}
+
+      <ThemeToggle />
     </div>
   );
 };

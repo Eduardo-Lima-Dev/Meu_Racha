@@ -13,7 +13,7 @@ interface TopBarProps {
 
 export default function TopBar({ title }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isAuthenticated, isAdmin, currentUserName } = useAuthStatus(); 
+  const { isAuthenticated, isAdmin, currentUserName } = useAuthStatus();
 
   const handleLogout = async () => {
     const auth = getAuth();
@@ -34,9 +34,15 @@ export default function TopBar({ title }: TopBarProps) {
     window.location.href = "/login";
   };
 
+  const isHomePage = title === "Ranking de Jogadores";
+  const adminLink = isHomePage ? "/dashboard" : "/";
+  const adminText = isHomePage ? "Administração" : "Home";
+
   return (
     <>
-      <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 text-gray-900 px-6 py-2 shadow-md rounded-b-lg z-50">
+      {/* Barra de topo */}
+      <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-white px-6 py-2 shadow-md rounded-b-lg z-50">
+        {/* Logo */}
         <div className="h-15 w-15 overflow-hidden rounded-10">
           <Image
             src="/logo-2.png"
@@ -46,10 +52,14 @@ export default function TopBar({ title }: TopBarProps) {
             className="object-cover"
           />
         </div>
+
+        {/* Título */}
         <h1 className="text-lg font-semibold">{title}</h1>
+
+        {/* Botão do Menu */}
         <button
           onClick={() => setMenuOpen(true)}
-          className="text-gray-900 hover:text-gray-600"
+          className="text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-400"
         >
           <Menu size={38} />
         </button>
@@ -57,30 +67,36 @@ export default function TopBar({ title }: TopBarProps) {
 
       <div className="h-20"></div>
 
+      {/* Sidebar do menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-gray-200 text-black transform ${
+        className={`fixed top-0 right-0 h-full w-64 bg-gray-200 dark:bg-gray-800 text-black dark:text-white transform ${
           menuOpen ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 shadow-lg z-50`}
       >
-        <div className="relative p-4 border-b border-gray-300 flex flex-col items-center">
+        {/* Cabeçalho do menu */}
+        <div className="relative p-4 border-b border-gray-300 dark:border-gray-600 flex flex-col items-center">
+          {/* Botão de Fechar */}
           <button
             onClick={() => setMenuOpen(false)}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            className="absolute top-4 right-4 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-500"
           >
             <X size={24} />
           </button>
+
+          {/* Avatar do Usuário */}
           <div className="flex flex-col items-center mt-8">
-            <div className="h-10 w-10 bg-gray-700 rounded-full flex items-center justify-center">
+            <div className="h-10 w-10 bg-gray-700 dark:bg-gray-500 rounded-full flex items-center justify-center">
               <User size={20} className="text-white" />
             </div>
             {currentUserName && (
-              <span className="text-lg font-medium text-gray-900 mt-2">
+              <span className="text-lg font-medium text-gray-900 dark:text-white mt-2">
                 {currentUserName}
               </span>
             )}
           </div>
         </div>
 
+        {/* Links do menu */}
         <nav className="flex flex-col p-4 space-y-4 items-center text-center">
           <Link href="/votos" className="menu-item">
             Votação
@@ -88,22 +104,29 @@ export default function TopBar({ title }: TopBarProps) {
           <Link href="/graficos" className="menu-item">
             Estatísticas
           </Link>
+
           {isAdmin && (
             <Link href="/notas" className="menu-item">
               Notas Estatísticas
             </Link>
           )}
-          <Link href={isAdmin ? "/" : "/dashboard"} className="menu-item">
-            {isAdmin ? "Home" : "Administração"}
+
+          {/* Botão de Home/Administração com lógica corrigida */}
+          <Link href={isAdmin ? adminLink : "/"} className="menu-item">
+            {isAdmin ? adminText : "Home"}
           </Link>
+
           <Link href="/perfil" className="menu-item">
             Perfil
           </Link>
+
           {isAdmin && (
             <Link href="/times" className="menu-item">
               Times
             </Link>
           )}
+
+          {/* Botão de Login/Logout */}
           {isAuthenticated ? (
             <button
               onClick={handleLogout}

@@ -27,7 +27,10 @@ const JogadorCard: React.FC<{ jogador: Jogador; isTop?: boolean }> = ({ jogador,
   return (
     <Card
       key={jogador.id}
-      className={`w-full max-w-xs border-2 ${isTop ? "border-yellow-300 bg-yellow-100 shadow-lg" : "border-gray-200"}`}
+      className={`w-full max-w-xs border-2 shadow-md 
+      ${isTop 
+        ? "border-yellow-300 bg-yellow-100 dark:bg-yellow-900 dark:border-yellow-600 dark:text-yellow-100" 
+        : "border-gray-200 dark:border-gray-700 bg-card dark:bg-card text-card-foreground dark:text-card-foreground"}`}
     >
       <CardHeader>
         <CardTitle className="flex justify-between items-center">
