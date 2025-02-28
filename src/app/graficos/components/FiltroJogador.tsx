@@ -12,12 +12,19 @@ interface FiltroJogadorProps {
 const FiltroJogador: React.FC<FiltroJogadorProps> = ({ jogadores, jogadorSelecionado, aoSelecionarJogador }) => {
   return (
     <Select value={jogadorSelecionado} onValueChange={aoSelecionarJogador}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder="Selecione um jogador" />
+      <SelectTrigger>
+      <SelectValue placeholder="Selecione um jogador" />
       </SelectTrigger>
-      <SelectContent>
+
+      <SelectContent 
+        className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-600 dark:border-gray-500 shadow-md rounded-md"
+      >
         {jogadores.map((jogador) => (
-          <SelectItem key={jogador.id} value={jogador.id}>
+          <SelectItem 
+            key={jogador.id} 
+            value={jogador.id} 
+            className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+          >
             {jogador.nome}
           </SelectItem>
         ))}

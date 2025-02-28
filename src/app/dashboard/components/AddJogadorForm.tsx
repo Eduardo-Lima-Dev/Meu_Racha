@@ -86,7 +86,10 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
           {mensagem && <p className="text-green-500 text-sm">{mensagem}</p>}
 
           {/* Botão Adicionar */}
-          <Button type="submit" className="w-full bg-primary dark:bg-primary-dark text-white py-2 rounded-lg hover:bg-opacity-80 transition-colors duration-200">
+          <Button 
+            type="submit" 
+            className="w-full bg-gray-900 dark:bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors duration-200"
+          >
             Adicionar Jogador
           </Button>
 

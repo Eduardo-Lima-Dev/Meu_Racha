@@ -11,10 +11,13 @@ interface VotacaoJogadorCardProps {
 
 const VotacaoJogadorCard: React.FC<VotacaoJogadorCardProps> = ({ jogador, handleVoteChange }) => {
   return (
-    <Card key={jogador.id} className="mb-4">
+    <Card
+      key={jogador.id}
+      className="mb-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 transition-colors duration-300"
+    >
       <CardHeader>
         <CardTitle>{jogador.nome}</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-gray-700 dark:text-gray-300">
           Assistências: {jogador.assistencias} | Gols: {jogador.gols}
         </CardDescription>
       </CardHeader>
@@ -26,7 +29,12 @@ const VotacaoJogadorCard: React.FC<VotacaoJogadorCardProps> = ({ jogador, handle
           {[1, 2, 3, 4, 5].map((value) => (
             <div key={value} className="flex items-center space-x-2">
               <RadioGroupItem value={String(value)} id={`r${jogador.id}-${value}`} />
-              <Label htmlFor={`r${jogador.id}-${value}`}>{value} Estrela{value > 1 && "s"}</Label>
+              <Label
+                htmlFor={`r${jogador.id}-${value}`}
+                className="text-gray-900 dark:text-gray-300"
+              >
+                {value} Estrela{value > 1 && "s"}
+              </Label>
             </div>
           ))}
         </RadioGroup>
