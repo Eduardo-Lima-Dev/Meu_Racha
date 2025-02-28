@@ -8,6 +8,7 @@ import AddJogadorForm from "./components/AddJogadorForm";
 import JogadoresList from "./components/JogadoresList";
 import TopBar from "../home/components/TopBar";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/ui/themeToggle";
 
 const AdminDashboard = () => {
   const router = useRouter();
@@ -36,17 +37,18 @@ const AdminDashboard = () => {
     const checkAuth = () => {
       const role = Cookies.get("role");
       const token = Cookies.get("token");
-  
+
       if (!token || role !== "admin") {
         router.push("/acesso-negado");
       }
     };
-  
+
     checkAuth();
-  }, [router]);  
+  }, [router]);
 
   return (
-    <div className="w-full min-h-screen flex flex-col p-4">
+
+    <div className="w-full min-h-screen flex flex-col p-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
       <TopBar title="Painel Administrativo" isAdmin={true} />
 
       <div className="flex flex-col md:flex-row w-full justify-center items-center md:items-start gap-6 mt-6 px-6">
@@ -79,6 +81,7 @@ const AdminDashboard = () => {
           onUpdateJogador={handleUpdateJogador}
         />
       </div>
+      <ThemeToggle />
     </div>
   );
 };

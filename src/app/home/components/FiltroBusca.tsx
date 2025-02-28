@@ -23,21 +23,25 @@ const FiltroBusca: React.FC<FiltroBuscaProps> = ({ onSearch, onFilterChange }) =
   return (
     <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-6 w-full">
       
+      {/* Campo de busca */}
       <div className="relative w-full md:w-1/3">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300" size={20} />
         <input
           type="text"
           placeholder="Buscar jogador..."
           value={search}
           onChange={handleSearchChange}
-          className="border border-gray-300 rounded-lg pl-10 pr-4 py-2 w-full"
+          className="border border-gray-300 dark:border-gray-600 rounded-lg pl-10 pr-4 py-2 w-full 
+                     bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500"
         />
       </div>
 
+      {/* Campo de filtro */}
       <select
         value={filter}
         onChange={handleFilterChange}
-        className="border border-gray-300 rounded-lg px-4 py-2 w-full md:w-1/4"
+        className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 w-full md:w-1/4
+                   bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
       >
         <option value="estrela">Ordenar por Estrela (Padrão)</option>
         <option value="gols">Ordenar por Gols</option>

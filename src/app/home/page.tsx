@@ -5,6 +5,7 @@ import { useJogadores } from "./hooks/useJogadores";
 import Ranking from "./components/Ranking";
 import TopBar from "./components/TopBar";
 import FiltroBusca from "./components/FiltroBusca";
+import ThemeToggle from "@/components/ui/themeToggle";
 
 const Home = () => {
   const { jogadores, loading, error } = useJogadores();
@@ -14,7 +15,7 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <p className="text-lg font-semibold">Carregando jogadores...</p>
       </div>
     );
@@ -33,28 +34,24 @@ const Home = () => {
 
   const mostrarTitulosEstrelas = searchQuery === "" && filter === "estrela";
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-lg font-semibold">Carregando jogadores...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto p-4">
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
       <TopBar title="Ranking de Jogadores" isAdmin={false} />
 
-      <FiltroBusca onSearch={setSearchQuery} onFilterChange={setFilter} />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <FiltroBusca onSearch={setSearchQuery} onFilterChange={setFilter} />
 
-      {error && <p className="text-center text-red-500">{error}</p>}
-      {!error && (
-        <Ranking
-          jogadores={jogadoresFiltrados}
-          categorias={mostrarTitulosEstrelas ? categoriasPadrao : []} 
-          mostrarTitulosEstrelas={mostrarTitulosEstrelas}
-        />
-      )}
+        {error && <p className="text-center text-red-500 dark:text-red-400">{error}</p>}
+        {!error && (
+          <Ranking
+            jogadores={jogadoresFiltrados}
+            categorias={mostrarTitulosEstrelas ? categoriasPadrao : []}
+            mostrarTitulosEstrelas={mostrarTitulosEstrelas}
+          />
+        )}
+      </div>
+
+      <ThemeToggle />
     </div>
   );
 };

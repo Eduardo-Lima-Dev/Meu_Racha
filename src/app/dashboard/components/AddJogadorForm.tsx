@@ -31,14 +31,15 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
   saveUpdates,
 }) => {
   return (
-    <Card className="w-full max-w-md mb-8">
+    <Card className="w-full max-w-md mb-8 bg-card dark:bg-gray-900 text-card-foreground dark:text-white transition-colors duration-300 border border-border dark:border-gray-700 shadow-md">
       <CardHeader className="flex items-center justify-between">
-        <CardTitle>Adicionar Novo Jogador</CardTitle>
+        <CardTitle className="text-lg font-semibold">Adicionar Novo Jogador</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
+          {/* Nome */}
           <div>
-            <label htmlFor="nome" className="block text-sm font-medium">
+            <label htmlFor="nome" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Nome do Jogador
             </label>
             <Input
@@ -47,10 +48,13 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
               value={nome}
               onChange={onNomeChange}
               required
+              className="w-full bg-input dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2"
             />
           </div>
+
+          {/* Assistências */}
           <div>
-            <label htmlFor="assistencias" className="block text-sm font-medium">
+            <label htmlFor="assistencias" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Assistências
             </label>
             <Input
@@ -59,10 +63,13 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
               value={assistencias}
               onChange={onAssistenciasChange}
               required
+              className="w-full bg-input dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2"
             />
           </div>
+
+          {/* Gols */}
           <div>
-            <label htmlFor="gols" className="block text-sm font-medium">
+            <label htmlFor="gols" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Gols
             </label>
             <Input
@@ -71,18 +78,35 @@ const AddJogadorForm: React.FC<AddJogadorFormProps> = ({
               value={gols}
               onChange={onGolsChange}
               required
+              className="w-full bg-input dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2"
             />
           </div>
+
+          {/* Mensagem de sucesso */}
           {mensagem && <p className="text-green-500 text-sm">{mensagem}</p>}
-          <Button type="submit" className="w-full">
+
+          {/* Botão Adicionar */}
+          <Button 
+            type="submit" 
+            className="w-full bg-gray-900 dark:bg-gray-700 text-white py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors duration-200"
+          >
             Adicionar Jogador
           </Button>
+
+          {/* Botões auxiliares */}
           <div className="flex justify-center space-x-4 w-full max-w-md mb-4">
-            <Button onClick={clearStars} className="w-full mt-4 bg-yellow-500 text-white">
+            <Button
+              onClick={clearStars}
+              className="w-full mt-4 bg-yellow-500 dark:bg-yellow-600 text-white py-2 rounded-lg hover:bg-opacity-80 transition-colors duration-200"
+            >
               Limpar Estrelas
             </Button>
           </div>
-          <Button onClick={saveUpdates} className="w-full bg-blue-500 text-white">
+
+          <Button
+            onClick={saveUpdates}
+            className="w-full bg-blue-500 dark:bg-blue-600 text-white py-2 rounded-lg hover:bg-opacity-80 transition-colors duration-200"
+          >
             Atualizar Jogadores
           </Button>
         </form>
