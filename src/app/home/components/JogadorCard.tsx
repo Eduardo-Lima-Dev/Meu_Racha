@@ -38,12 +38,12 @@ const JogadorCard: React.FC<{ jogador: Jogador; isTop?: boolean }> = ({ jogador,
           {renderStars(media.media)}
         </CardTitle>
         <CardDescription className="text-gray-700 dark:text-gray-300">
-          Média de Estrelas: {media.media.toFixed(2)}
+        ⭐ Média de Estrelas: {media.media.toFixed(2)}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-gray-800 dark:text-gray-200">Gols: {jogador.gols}</p>
-        <p className="text-gray-800 dark:text-gray-200">Assistências: {jogador.assistencias}</p>
+        <p className="text-gray-800 dark:text-gray-200">⚽ Gols: {jogador.gols}</p>
+        <p className="text-gray-800 dark:text-gray-200">🎯 Assistências: {jogador.assistencias}</p>
       </CardContent>
     </Card>
   );

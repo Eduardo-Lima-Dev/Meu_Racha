@@ -15,7 +15,7 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+      <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <p className="text-lg font-semibold">Carregando jogadores...</p>
       </div>
     );
@@ -35,7 +35,7 @@ const Home = () => {
   const mostrarTitulosEstrelas = searchQuery === "" && filter === "estrela";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
       <TopBar title="Ranking de Jogadores" isAdmin={false} />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">

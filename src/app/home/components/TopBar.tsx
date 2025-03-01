@@ -43,7 +43,7 @@ export default function TopBar({ title }: TopBarProps) {
       {/* Barra de topo */}
       <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-white px-6 py-2 shadow-md rounded-b-lg z-50">
         {/* Logo */}
-        <div className="h-15 w-15 overflow-hidden rounded-10">
+        <Link href="/" className="h-15 w-15 overflow-hidden rounded-10">
           <Image
             src="/logo-2.png"
             alt="Logo"
@@ -51,7 +51,7 @@ export default function TopBar({ title }: TopBarProps) {
             height={60}
             className="object-cover"
           />
-        </div>
+        </Link>
 
         {/* Título */}
         <h1 className="text-lg font-semibold">{title}</h1>
