@@ -1,40 +1,62 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, getFirestore } from "firebase/firestore";
-import { app } from "../../../config/firebaseConfig";
+import { ref, onValue, set, get } from 'firebase/database';
+import { database } from '@/config/firebaseConfig';
 import { Bet } from '../types/bet';
 
-export function useBets(userId: string) {
+const SALDO_INICIAL = 100;
+
+export function useBets(userId: string | undefined) {
   const [bets, setBets] = useState<Bet[]>([]);
   const [loading, setLoading] = useState(true);
-  const db = getFirestore(app);
+  const [userBalance, setUserBalance] = useState(SALDO_INICIAL);
 
   useEffect(() => {
-    const fetchBets = async () => {
-      try {
-        // Exemplo: buscar apostas somente do usuário logado
-        const q = query(
-          collection(db, 'bets'),
-          where('userId', '==', userId)
-        );
-        const querySnapshot = await getDocs(q);
-        const betsData = querySnapshot.docs.map(doc => {
-          // Asseguramos que os dados sejam transformados conforme a interface Bet
-          return {
-            id: doc.id,
-            ...doc.data()
-          } as Bet;
-        });
+    if (!userId) return;
 
-        setBets(betsData);
-      } catch (error) {
-        console.error("Erro ao buscar apostas:", error);
-      } finally {
-        setLoading(false);
+    // Referência para as apostas do usuário
+    const betsRef = ref(database, `bets/${userId}`);
+    const balanceRef = ref(database, `users/${userId}/balance`);
+
+    // Verifica se o usuário já tem saldo definido
+    const checkInitialBalance = async () => {
+      const balanceSnapshot = await get(balanceRef);
+      if (!balanceSnapshot.exists()) {
+        // Se não existe saldo, define o saldo inicial
+        await set(balanceRef, SALDO_INICIAL);
       }
     };
 
-    fetchBets();
+    checkInitialBalance();
+
+    // Listener para mudanças nas apostas
+    const unsubscribe = onValue(betsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const betsData = snapshot.val();
+        const betsArray = Object.entries(betsData as Record<string, Bet>).map(([key, value]) => ({
+          id: key,
+          ...value,
+        }));
+        setBets(betsArray);
+      } else {
+        setBets([]);
+      }
+      setLoading(false);
+    });
+
+    // Listener para mudanças no saldo
+    const unsubscribeBalance = onValue(balanceRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setUserBalance(snapshot.val());
+      } else {
+        setUserBalance(SALDO_INICIAL);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      unsubscribeBalance();
+    };
   }, [userId]);
 
-  return { bets, loading };
+  return { bets, loading, userBalance };
 }
