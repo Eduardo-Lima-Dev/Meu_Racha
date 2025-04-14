@@ -1,4 +1,3 @@
-// src/types.ts
 export interface Jogador {
   id: string;
   nome: string;
@@ -6,4 +5,5 @@ export interface Jogador {
   gols: number;
   votos: { userId: string; vote: number }[];
   excluirDaVotacao: boolean;
+  estrelas?: number;
 }

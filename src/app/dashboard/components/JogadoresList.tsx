@@ -21,11 +21,16 @@ const JogadoresList: React.FC<JogadoresListProps> = ({
   onToggleStats,
   onUpdateJogador,
 }) => {
+  // Ordena os jogadores por nome
+  const jogadoresOrdenados = [...jogadores].sort((a, b) => 
+    a.nome.localeCompare(b.nome, 'pt-BR')
+  );
+
   return (
     <div className="mb-6">
       <h2 className="text-xl font-semibold mb-4 text-center text-gray-900 dark:text-white">Jogadores</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
-        {jogadores.map((jogador) => (
+        {jogadoresOrdenados.map((jogador) => (
           <Card
             key={jogador.id}
             className="w-full max-w-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300 border border-gray-300 dark:border-gray-700 shadow-md"

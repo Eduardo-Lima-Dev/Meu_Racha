@@ -99,7 +99,7 @@ const dividirTimesOtimizado = (jogadores: Jogador[], numTimes: number, maxIterac
 
   for (let i = 0; i < maxIteracoes; i++) {
     let novosTimes = crossover(times);
-    novosTimes = mutacao(novosTimes, 0.1); // Taxa de mutação de 10%
+    novosTimes = mutacao(novosTimes, 0.3);
     
     const novaAvaliacao = avaliarTimes(novosTimes);
     const novaPontuacao = novaAvaliacao.reduce((acc, t) => acc + t.peso, 0);
