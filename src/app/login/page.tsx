@@ -4,7 +4,7 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, getFirestore } from "firebase/firestore";
+import { doc, setDoc, getFirestore, getDoc } from "firebase/firestore";
 import { app } from "../../config/firebaseConfig";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,11 +30,25 @@ const UserLogin = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, senha);
       const userId = userCredential.user.uid;
 
-      const token = await userCredential.user.getIdToken();
-      Cookies.set("token", token);
-      Cookies.set("userId", userId);
-      Cookies.set("isAuthenticated", "false"); 
-      router.push("/");
+      // Buscar a role do usuário no Firestore
+      const userDocRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const role = userData?.role || "user";
+
+        const token = await userCredential.user.getIdToken();
+        Cookies.set("token", token);
+        Cookies.set("userId", userId);
+        Cookies.set("role", role);
+        Cookies.set("isAuthenticated", "true");
+
+        // Redirecionar para a home independente da role
+        router.push("/");
+      } else {
+        setErro("Erro: Conta sem permissões definidas.");
+      }
     } catch (error) {
       console.error("Erro no login:", error);
       setErro("Credenciais inválidas. Por favor, tente novamente.");

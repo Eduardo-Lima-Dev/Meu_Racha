@@ -98,32 +98,42 @@ export default function TopBar({ title }: TopBarProps) {
 
         {/* Links do menu */}
         <nav className="flex flex-col p-4 space-y-4 items-center text-center">
-          <Link href="/votos" className="menu-item">
-            Votação
+          {/* Links sempre visíveis */}
+          <Link href="/" className="menu-item">
+            Home
           </Link>
           <Link href="/graficos" className="menu-item">
             Estatísticas
           </Link>
 
-          {isAdmin && (
-            <Link href="/notas" className="menu-item">
-              Notas Estatísticas
-            </Link>
+          {/* Links apenas para usuários autenticados */}
+          {isAuthenticated && (
+            <>
+              <Link href="/perfil" className="menu-item">
+                Perfil
+              </Link>
+            </>
           )}
 
-          {/* Botão de Home/Administração com lógica corrigida */}
-          <Link href={isAdmin ? adminLink : "/"} className="menu-item">
-            {isAdmin ? adminText : "Home"}
-          </Link>
-
-          <Link href="/perfil" className="menu-item">
-            Perfil
-          </Link>
-
+          {/* Links apenas para administradores */}
           {isAdmin && (
-            <Link href="/times" className="menu-item">
-              Times
-            </Link>
+            <>
+              <Link href="/votos" className="menu-item">
+                Votação
+              </Link>
+              <Link href="/notas" className="menu-item">
+                Notas Estatísticas
+              </Link>
+              <Link href="/times" className="menu-item">
+                Times
+              </Link>
+              <Link href="/cadastro" className="menu-item">
+                Cadastrar Admin
+              </Link>
+              <Link href="/dashboard" className="menu-item">
+                Administração
+              </Link>
+            </>
           )}
 
           {/* Botão de Login/Logout */}

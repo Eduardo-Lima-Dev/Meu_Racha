@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { database } from "@/config/firebaseConfig";
 import { validarVotacao } from "../utils/validarVotacao";
 import { Jogador } from "@/app/dashboard/types";
+import Cookies from "js-cookie";
 
 const useVotacao = () => {
   const [jogadores, setJogadores] = useState<Jogador[]>([]);
