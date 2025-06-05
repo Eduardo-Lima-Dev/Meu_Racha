@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
-import Cookies from "js-cookie";
 import { useAuthStatus } from "../hooks/useAuthStatus";
 
 interface TopBarProps {
@@ -19,11 +18,6 @@ export default function TopBar({ title }: TopBarProps) {
     const auth = getAuth();
     try {
       await signOut(auth);
-      Cookies.remove("role", { path: "/" });
-      Cookies.remove("token", { path: "/" });
-      Cookies.remove("userId", { path: "/" });
-      Cookies.remove("isAuthenticated", { path: "/" });
-
       window.location.href = "/";
     } catch (error) {
       console.error("Erro ao deslogar:", error);
@@ -35,65 +29,50 @@ export default function TopBar({ title }: TopBarProps) {
   };
 
   const isHomePage = title === "Ranking de Jogadores";
-  const adminLink = isHomePage ? "/dashboard" : "/";
-  const adminText = isHomePage ? "Administração" : "Home";
 
   return (
-    <>
-      {/* Barra de topo */}
-      <div className="fixed top-0 left-0 w-full flex items-center justify-between bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-white px-6 py-2 shadow-md rounded-b-lg z-50">
-        {/* Logo */}
-        <Link href="/" className="h-15 w-15 overflow-hidden rounded-10">
-          <Image
-            src="/logo-2.png"
-            alt="Logo"
-            width={60}
-            height={60}
-            className="object-cover"
-          />
-        </Link>
-
-        {/* Título */}
-        <h1 className="text-lg font-semibold">{title}</h1>
-
-        {/* Botão do Menu */}
-        <button
-          onClick={() => setMenuOpen(true)}
-          className="text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-400"
-        >
-          <Menu size={38} />
-        </button>
-      </div>
-
-      <div className="h-20"></div>
-
-      {/* Sidebar do menu */}
-      <div
-        className={`fixed top-0 right-0 h-full w-64 bg-gray-200 dark:bg-gray-800 text-black dark:text-white transform ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-300 shadow-lg z-50`}
-      >
-        {/* Cabeçalho do menu */}
-        <div className="relative p-4 border-b border-gray-300 dark:border-gray-600 flex flex-col items-center">
-          {/* Botão de Fechar */}
+    <div className="relative">
+      {/* Barra superior */}
+      <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center">
           <button
-            onClick={() => setMenuOpen(false)}
-            className="absolute top-4 right-4 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-500"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
           >
-            <X size={24} />
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
+          <h1 className="ml-4 text-xl font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h1>
+        </div>
 
-          {/* Avatar do Usuário */}
-          <div className="flex flex-col items-center mt-8">
-            <div className="h-10 w-10 bg-gray-700 dark:bg-gray-500 rounded-full flex items-center justify-center">
-              <User size={20} className="text-white" />
-            </div>
-            {currentUserName && (
-              <span className="text-lg font-medium text-gray-900 dark:text-white mt-2">
+        <div className="flex items-center space-x-4">
+          {isAuthenticated && (
+            <div className="flex items-center space-x-2">
+              <User size={20} className="text-gray-600 dark:text-gray-300" />
+              <span className="text-gray-700 dark:text-gray-300">
                 {currentUserName}
               </span>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Menu lateral */}
+      <div
+        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-200 ease-in-out ${
+          menuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Logo */}
+        <div className="flex items-center justify-center p-4 border-b border-gray-200 dark:border-gray-700">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={150}
+            height={150}
+            className="rounded-lg"
+          />
         </div>
 
         {/* Links do menu */}
@@ -155,24 +134,13 @@ export default function TopBar({ title }: TopBarProps) {
         </nav>
       </div>
 
-      <style jsx>{`
-        .menu-item {
-          padding: 10px;
-          border-radius: 5px;
-          transition: background 0.2s;
-          font-size: 16px;
-          width: 100%;
-        }
-        .menu-item:hover {
-          background: rgba(214, 89, 89, 0.5);
-        }
-        .menu-item.text-red-500:hover {
-          background: rgba(214, 89, 89, 0.5);
-        }
-        .menu-item.text-blue-500:hover {
-          background: rgba(59, 130, 246, 0.5);
-        }
-      `}</style>
-    </>
+      {/* Overlay para fechar o menu ao clicar fora */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-10"
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+    </div>
   );
 }
