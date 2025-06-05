@@ -20,8 +20,11 @@ const Home = () => {
 
   // Força o tema escuro ao carregar o componente
   useEffect(() => {
-    setTheme('dark');
-  }, []);
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+  }, [setTheme]);
 
   if (loading) {
     return (

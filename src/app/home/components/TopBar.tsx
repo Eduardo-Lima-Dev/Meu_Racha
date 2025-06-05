@@ -28,8 +28,6 @@ export default function TopBar({ title }: TopBarProps) {
     window.location.href = "/login";
   };
 
-  const isHomePage = title === "Ranking de Jogadores";
-
   return (
     <div className="relative">
       {/* Barra superior */}
