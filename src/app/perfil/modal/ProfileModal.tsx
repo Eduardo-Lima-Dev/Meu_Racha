@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { auth } from "../../../config/firebaseConfig";
 import { updateProfile, updateEmail, updatePassword } from "firebase/auth";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 
 interface ProfileModalProps {
   type: string;
@@ -66,43 +69,46 @@ export default function ProfileModal({ type, onClose }: ProfileModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-80 flex flex-col items-center text-center">
-        <h2 className="text-xl font-semibold mb-4">Alterar {type}</h2>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <Card className="w-full max-w-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-center">Alterar {type}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="relative">
+            <Input
+              type={type === "Senha" && !showPassword ? "password" : "text"}
+              placeholder={placeholder}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+            />
+            {type === "Senha" && (
+              <button
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-gray-500 dark:text-gray-400"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            )}
+          </div>
 
-        <div className="relative w-full">
-          <input
-            type={type === "Senha" && !showPassword ? "password" : "text"}
-            className="border p-2 w-full rounded-lg text-center pr-10"
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          {type === "Senha" && (
-            <button
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 text-gray-500"
+          <div className="flex gap-4">
+            <Button
+              onClick={onClose}
+              className="w-full bg-red-500 hover:bg-red-600 text-white"
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          )}
-        </div>
-
-        <div className="flex justify-center gap-4 w-full mt-4">
-          <button 
-            onClick={onClose} 
-            className="px-4 py-2 bg-red-400 text-white rounded-lg w-1/2"
-          >
-            Cancelar
-          </button>
-          <button 
-            onClick={handleSave} 
-            className="px-4 py-2 bg-black text-white rounded-lg w-1/2"
-          >
-            Salvar
-          </button>
-        </div>
-      </div>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Salvar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

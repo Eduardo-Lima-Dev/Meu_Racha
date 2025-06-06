@@ -1,7 +1,21 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, User } from "lucide-react";
+import { 
+  Menu, 
+  X, 
+  User, 
+  Home, 
+  BarChart2, 
+  UserCircle, 
+  Vote, 
+  Star, 
+  Users, 
+  UserPlus, 
+  Settings,
+  LogIn,
+  LogOut
+} from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 import { useAuthStatus } from "../hooks/useAuthStatus";
 
@@ -46,7 +60,7 @@ export default function TopBar({ title }: TopBarProps) {
 
         <div className="flex items-center space-x-4">
           {isAuthenticated && (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 pr-4">
               <User size={20} className="text-gray-600 dark:text-gray-300" />
               <span className="text-gray-700 dark:text-gray-300">
                 {currentUserName}
@@ -65,7 +79,7 @@ export default function TopBar({ title }: TopBarProps) {
         {/* Logo */}
         <div className="flex items-center justify-center p-4 border-b border-gray-200 dark:border-gray-700">
           <Image
-            src="/logo.png"
+            src="/logo-2.png"
             alt="Logo"
             width={150}
             height={150}
@@ -74,19 +88,22 @@ export default function TopBar({ title }: TopBarProps) {
         </div>
 
         {/* Links do menu */}
-        <nav className="flex flex-col p-4 space-y-4 items-center text-center">
+        <nav className="flex flex-col p-4 space-y-4">
           {/* Links sempre visíveis */}
-          <Link href="/" className="menu-item">
+          <Link href="/" className="menu-item flex items-center gap-2 w-full">
+            <Home size={20} />
             Home
           </Link>
-          <Link href="/graficos" className="menu-item">
+          <Link href="/graficos" className="menu-item flex items-center gap-2 w-full">
+            <BarChart2 size={20} />
             Estatísticas
           </Link>
 
           {/* Links apenas para usuários autenticados */}
           {isAuthenticated && (
             <>
-              <Link href="/perfil" className="menu-item">
+              <Link href="/perfil" className="menu-item flex items-center gap-2 w-full">
+                <UserCircle size={20} />
                 Perfil
               </Link>
             </>
@@ -95,19 +112,24 @@ export default function TopBar({ title }: TopBarProps) {
           {/* Links apenas para administradores */}
           {isAdmin && (
             <>
-              <Link href="/votos" className="menu-item">
+              <Link href="/votos" className="menu-item flex items-center gap-2 w-full">
+                <Vote size={20} />
                 Votação
               </Link>
-              <Link href="/notas" className="menu-item">
+              <Link href="/notas" className="menu-item flex items-center gap-2 w-full">
+                <Star size={20} />
                 Notas Estatísticas
               </Link>
-              <Link href="/times" className="menu-item">
+              <Link href="/times" className="menu-item flex items-center gap-2 w-full">
+                <Users size={20} />
                 Times
               </Link>
-              <Link href="/cadastro" className="menu-item">
+              <Link href="/cadastro" className="menu-item flex items-center gap-2 w-full">
+                <UserPlus size={20} />
                 Cadastrar Admin
               </Link>
-              <Link href="/dashboard" className="menu-item">
+              <Link href="/dashboard" className="menu-item flex items-center gap-2 w-full">
+                <Settings size={20} />
                 Administração
               </Link>
             </>
@@ -117,15 +139,17 @@ export default function TopBar({ title }: TopBarProps) {
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center justify-center gap-2"
             >
+              <LogOut size={20} />
               Sair
             </button>
           ) : (
             <button
               onClick={handleLogin}
-              className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2"
             >
+              <LogIn size={20} />
               Entrar
             </button>
           )}
