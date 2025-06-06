@@ -64,8 +64,8 @@ const CriarContaAdmin = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleCriarConta} className="space-y-4">
-            <div>
+      <form onSubmit={handleCriarConta} className="space-y-4">
+        <div>
               <label htmlFor="nome" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Nome
               </label>
@@ -83,25 +83,25 @@ const CriarContaAdmin = () => {
                 E-mail
               </label>
               <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
                 className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
-              />
-            </div>
-            <div>
+          />
+        </div>
+        <div>
               <label htmlFor="senha" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Senha
               </label>
               <div className="relative">
                 <Input
-                  id="senha"
+            id="senha"
                   type={mostrarSenha ? "text" : "password"}
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  required
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
                   className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 pr-10"
                 />
                 <button
@@ -119,8 +119,8 @@ const CriarContaAdmin = () => {
               <Button type="submit" className="bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors duration-200">
                 Criar Conta
               </Button>
-            </div>
-          </form>
+        </div>
+      </form>
         </CardContent>
       </Card>
       <ThemeToggle />

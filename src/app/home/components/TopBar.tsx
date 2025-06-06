@@ -58,7 +58,7 @@ export default function TopBar({ title }: TopBarProps) {
 
       {/* Menu lateral */}
       <div
-        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-200 ease-in-out ${
+        className={`fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-200 ease-in-out z-50 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -117,25 +117,25 @@ export default function TopBar({ title }: TopBarProps) {
           {isAuthenticated ? (
             <button
               onClick={handleLogout}
-              className="menu-item text-red-500 hover:bg-red-600"
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             >
-              Logout
+              Sair
             </button>
           ) : (
             <button
               onClick={handleLogin}
-              className="menu-item text-blue-500 hover:bg-blue-600"
+              className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Login
+              Entrar
             </button>
           )}
         </nav>
       </div>
 
-      {/* Overlay para fechar o menu ao clicar fora */}
+      {/* Overlay */}
       {menuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-10"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={() => setMenuOpen(false)}
         />
       )}

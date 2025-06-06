@@ -38,14 +38,14 @@ const UserLogin = () => {
         const userData = userDoc.data();
         const role = userData?.role || "user";
 
-        const token = await userCredential.user.getIdToken();
-        Cookies.set("token", token);
-        Cookies.set("userId", userId);
+      const token = await userCredential.user.getIdToken();
+      Cookies.set("token", token);
+      Cookies.set("userId", userId);
         Cookies.set("role", role);
         Cookies.set("isAuthenticated", "true");
 
         // Redirecionar para a home independente da role
-        router.push("/");
+      router.push("/");
       } else {
         setErro("Erro: Conta sem permissões definidas.");
       }
