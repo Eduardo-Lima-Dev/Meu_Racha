@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { Jogador } from "../../home/types";
 import { AddCasualPlayerModal } from "../../home/components/AddCasualPlayerModal";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { getDatabase, ref, get } from "firebase/database";
+import { getDatabase, ref, get, remove } from "firebase/database";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface DivisaoTimesProps {
   jogadores: Jogador[];
@@ -124,6 +134,8 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
   const [times, setTimes] = useState<Jogador[][]>([]);
   const [divisaoRealizada, setDivisaoRealizada] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [jogadorCasual, setJogadorCasual] = useState<Jogador | null>(null);
 
   const carregarJogadores = async () => {
     try {
@@ -144,10 +156,32 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
           const jogadoresAtualizados = [...prev, ...novosJogadores];
           return jogadoresAtualizados;
         });
+
+        // Verifica se há jogadores casuais e mostra o diálogo de confirmação
+        const jogadoresCasuais = jogadoresData.filter(j => j.casual);
+        if (jogadoresCasuais.length > 0) {
+          setJogadorCasual(jogadoresCasuais[0]);
+          setShowConfirmDialog(true);
+        }
       }
     } catch (error) {
       console.error("Erro ao carregar jogadores:", error);
     }
+  };
+
+  const handleConfirmDialog = async (remover: boolean) => {
+    if (remover && jogadorCasual) {
+      try {
+        const db = getDatabase();
+        const jogadorRef = ref(db, `jogadores/${jogadorCasual.id}`);
+        await remove(jogadorRef);
+        setSelecionados(prev => prev.filter(j => j.id !== jogadorCasual.id));
+      } catch (error) {
+        console.error("Erro ao remover jogador casual:", error);
+      }
+    }
+    setShowConfirmDialog(false);
+    setJogadorCasual(null);
   };
 
   useEffect(() => {
@@ -282,6 +316,25 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
           setDivisaoRealizada(false);
         }}
       />
+
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Jogador Casual Encontrado</AlertDialogTitle>
+            <AlertDialogDescription>
+              Deseja remover o jogador casual {jogadorCasual?.nome} da lista?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => handleConfirmDialog(false)}>
+              Manter
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleConfirmDialog(true)}>
+              Remover
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
