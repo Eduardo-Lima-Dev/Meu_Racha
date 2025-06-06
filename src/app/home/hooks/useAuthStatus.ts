@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import Cookies from "js-cookie";
 
 export function useAuthStatus() {
@@ -9,10 +10,23 @@ export function useAuthStatus() {
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const db = getFirestore();
+    
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setIsAuthenticated(true);
-        setCurrentUserName(user.displayName || "Usuário");
+        
+        // Buscar dados do usuário no Firestore
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setCurrentUserName(userData.nome || "Usuário");
+          setIsAdmin(userData.role === "admin");
+        } else {
+          setCurrentUserName(user.displayName || "Usuário");
+        }
 
         const role = Cookies.get("role");
         setIsAdmin(role === "admin");

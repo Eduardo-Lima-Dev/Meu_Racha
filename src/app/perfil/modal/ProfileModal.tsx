@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { auth } from "../../../config/firebaseConfig";
 import { updateProfile, updateEmail, updatePassword } from "firebase/auth";
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,16 @@ export default function ProfileModal({ type, onClose }: ProfileModalProps) {
       }
 
       if (type === "User") {
+        // Atualizar no Auth
         await updateProfile(auth.currentUser, { displayName: value });
+        
+        // Atualizar no Firestore
+        const db = getFirestore();
+        const userDocRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userDocRef, {
+          nome: value
+        });
+        
         alert("Nome atualizado com sucesso!");
       } else if (type === "Email") {
         await updateEmail(auth.currentUser, value);

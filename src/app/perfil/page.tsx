@@ -6,18 +6,32 @@ import ProfileModal from "./modal/ProfileModal";
 import { useRouter } from "next/navigation";
 import { auth } from "../../config/firebaseConfig"; // Importe a configuração do Firebase
 import { onAuthStateChanged, User } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import ThemeToggle from "@/components/ui/themeToggle";
 
 export default function Profile() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [user, setUser] = useState<User | null>(null);
+  const [userName, setUserName] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         setUser(authUser);
+        
+        // Buscar dados do usuário no Firestore
+        const db = getFirestore();
+        const userDocRef = doc(db, "users", authUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserName(userData.nome || "Nome não definido");
+        } else {
+          setUserName(authUser.displayName || "Nome não definido");
+        }
       } else {
         router.push("/login");
       }
@@ -55,7 +69,7 @@ export default function Profile() {
 
         <button onClick={() => openModal("User")} className="flex flex-col items-center w-full p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg">
           <FaUser className="text-2xl text-gray-900 dark:text-white" />
-          <span className="text-lg mt-2">{user.displayName || "Nome não definido"}</span>
+          <span className="text-lg mt-2">{userName}</span>
         </button>
         
         <button onClick={() => openModal("Email")} className="flex flex-col items-center w-full p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg">
@@ -70,7 +84,7 @@ export default function Profile() {
       </div>
 
       {modalOpen && <ProfileModal type={modalType} onClose={() => setModalOpen(false)} />}
-        <ThemeToggle />
+      <ThemeToggle />
     </div>
   );
 }
