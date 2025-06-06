@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Jogador } from "../../home/types";
+import { AddCasualPlayerModal } from "../../home/components/AddCasualPlayerModal";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getDatabase, ref, get } from "firebase/database";
 
 interface DivisaoTimesProps {
   jogadores: Jogador[];
@@ -120,6 +123,41 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
   const [jogadoresPorTime, setJogadoresPorTime] = useState(5);
   const [times, setTimes] = useState<Jogador[][]>([]);
   const [divisaoRealizada, setDivisaoRealizada] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const carregarJogadores = async () => {
+    try {
+      const db = getDatabase();
+      const jogadoresRef = ref(db, "jogadores");
+      const snapshot = await get(jogadoresRef);
+      const data = snapshot.val();
+      if (data) {
+        const jogadoresData = Object.entries(data).map(([id, jogador]: [string, any]) => ({
+          id,
+          ...jogador
+        })) as Jogador[];
+        
+        // Mantém os jogadores selecionados e adiciona o novo jogador casual
+        setSelecionados(prev => {
+          const prevIds = new Set(prev.map(j => j.id));
+          const novosJogadores = jogadoresData.filter(j => !prevIds.has(j.id) && j.casual);
+          const jogadoresAtualizados = [...prev, ...novosJogadores];
+          return jogadoresAtualizados;
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao carregar jogadores:", error);
+    }
+  };
+
+  useEffect(() => {
+    carregarJogadores();
+  }, []);
+
+  const handleRemovePlayer = (jogador: Jogador) => {
+    setSelecionados((prev) => prev.filter((j) => j.id !== jogador.id));
+    setDivisaoRealizada(false);
+  };
 
   // Ordena os jogadores alfabeticamente pelo nome
   const jogadoresOrdenados = [...jogadores].sort((a, b) =>
@@ -184,6 +222,13 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
         >
           Gerar Times
         </button>
+
+        <button 
+          onClick={() => setIsModalOpen(true)} 
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+        >
+          Adicionar Jogador Casual
+        </button>
       </div>
 
       {/* Lista de jogadores */}
@@ -211,13 +256,32 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
               <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Time {index + 1}</h3>
               <ul className="text-gray-800 dark:text-gray-300">
                 {time.map((jogador) => (
-                  <li key={jogador.id}>{jogador.nome}</li>
+                  <li key={jogador.id} className="flex justify-between items-center">
+                    <span>{jogador.nome}</span>
+                    {jogador.casual && (
+                      <button
+                        onClick={() => handleRemovePlayer(jogador)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Remover
+                      </button>
+                    )}
+                  </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
       )}
+
+      <AddCasualPlayerModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={async () => {
+          await carregarJogadores();
+          setDivisaoRealizada(false);
+        }}
+      />
     </div>
   );
 };

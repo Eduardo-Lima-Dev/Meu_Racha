@@ -6,4 +6,5 @@ export interface Jogador {
   excluirDaVotacao: boolean;
   gols: number;
   votos: { userId: string; vote: number }[];
+  casual?: boolean;
 }
