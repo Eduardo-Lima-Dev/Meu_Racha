@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Jogador } from "../../home/types";
 import { AddCasualPlayerModal } from "../../home/components/AddCasualPlayerModal";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { getDatabase, ref, get, remove } from "firebase/database";
 import {
   AlertDialog,
@@ -18,6 +17,19 @@ interface DivisaoTimesProps {
   jogadores: Jogador[];
 }
 
+interface JogadorData {
+  id: string;
+  nome: string;
+  casual: boolean;
+  estrelas: number;
+  votos: Array<{ userId: string; vote: number }>;
+  media: number;
+  gols: number;
+  assistencias: number;
+  createdAt: string;
+  excluirDaVotacao?: boolean;
+}
+
 const P1 = 0.4;
 const P2 = 0.4;
 const P3 = 0.2;
@@ -30,18 +42,39 @@ const complementaridade = {
 };
 
 const calcularPeso = (jogador: Jogador) => {
+  const media = jogador.media || 0;
+  const gols = jogador.gols || 0;
+  const assistencias = jogador.assistencias || 0;
+
+  console.log(`Calculando peso para ${jogador.nome}:`, {
+    media,
+    gols,
+    assistencias,
+    P1,
+    P2,
+    P3
+  });
+
   return (
-    jogador.media * P1 +
-    jogador.gols * P2 +
-    jogador.assistencias * P3
+    media * P1 +
+    gols * P2 +
+    assistencias * P3
   );
 };
 
 const calcularComplementaridade = (jogadorA: Jogador, jogadorB: Jogador) => {
+  const mediaA = jogadorA.media || 0;
+  const golsA = jogadorA.gols || 0;
+  const assistenciasA = jogadorA.assistencias || 0;
+  
+  const mediaB = jogadorB.media || 0;
+  const golsB = jogadorB.gols || 0;
+  const assistenciasB = jogadorB.assistencias || 0;
+
   return (
-    Math.abs(jogadorA.media - jogadorB.media) * complementaridade.media.assistencias +
-    Math.abs(jogadorA.gols - jogadorB.gols) * complementaridade.gols.assistencias +
-    Math.abs(jogadorA.assistencias - jogadorB.assistencias) * complementaridade.assistencias.gols
+    Math.abs(mediaA - mediaB) * complementaridade.media.assistencias +
+    Math.abs(golsA - golsB) * complementaridade.gols.assistencias +
+    Math.abs(assistenciasA - assistenciasB) * complementaridade.assistencias.gols
   );
 };
 
@@ -60,11 +93,20 @@ const gerarTimesIniciais = (jogadores: Jogador[], numTimes: number) => {
 // Avaliação da qualidade dos times
 const avaliarTimes = (times: Jogador[][]) => {
   return times.map((time) => {
-    const totalPeso = time.reduce((acc, jogador) => acc + calcularPeso(jogador), 0);
+    const totalPeso = time.reduce((acc, jogador) => {
+      const peso = calcularPeso(jogador);
+      console.log(`Peso do jogador ${jogador.nome}: ${peso}`);
+      return acc + peso;
+    }, 0);
+
     const complementaridadeTotal = time.reduce((acc, jogador, i, arr) => {
       if (i === 0) return acc;
-      return acc + calcularComplementaridade(jogador, arr[i - 1]);
+      const comp = calcularComplementaridade(jogador, arr[i - 1]);
+      console.log(`Complementaridade entre ${jogador.nome} e ${arr[i - 1].nome}: ${comp}`);
+      return acc + comp;
     }, 0);
+
+    console.log(`Time - Peso total: ${totalPeso}, Complementaridade: ${complementaridadeTotal}`);
 
     return {
       peso: totalPeso,
@@ -127,6 +169,21 @@ const dividirTimesOtimizado = (jogadores: Jogador[], numTimes: number, maxIterac
   return times;
 };
 
+const calcularValorTotalTime = (time: Jogador[]) => {
+  const total = time.reduce((total, jogador) => {
+    const pesoJogador = calcularPeso(jogador);
+    console.log(`Jogador ${jogador.nome}:`, {
+      media: jogador.media,
+      gols: jogador.gols,
+      assistencias: jogador.assistencias,
+      peso: pesoJogador
+    });
+    return total + pesoJogador;
+  }, 0);
+  console.log(`Total do time: ${total}`);
+  return total.toFixed(1);
+};
+
 const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
   const [selecionados, setSelecionados] = useState<Jogador[]>([]);
   const [numTimes, setNumTimes] = useState(3);
@@ -136,6 +193,7 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [jogadorCasual, setJogadorCasual] = useState<Jogador | null>(null);
+  const [avaliacaoTimes, setAvaliacaoTimes] = useState<Array<{ peso: number; complementaridade: number }>>([]);
 
   const carregarJogadores = async () => {
     try {
@@ -144,9 +202,9 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
       const snapshot = await get(jogadoresRef);
       const data = snapshot.val();
       if (data) {
-        const jogadoresData = Object.entries(data).map(([id, jogador]: [string, any]) => ({
+        const jogadoresData = Object.entries(data).map(([id, jogador]: [string, unknown]) => ({
           id,
-          ...jogador
+          ...(jogador as Omit<JogadorData, 'id'>)
         })) as Jogador[];
         
         // Mantém os jogadores selecionados e adiciona o novo jogador casual
@@ -216,8 +274,10 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
     setDivisaoRealizada(false);
 
     const novosTimes = dividirTimesOtimizado(selecionados, numTimes, 1000);
+    const avaliacao = avaliarTimes(novosTimes);
 
     setTimes(novosTimes);
+    setAvaliacaoTimes(avaliacao);
     setDivisaoRealizada(true);
   };
 
@@ -257,8 +317,8 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
           Gerar Times
         </button>
 
-        <button 
-          onClick={() => setIsModalOpen(true)} 
+        <button
+          onClick={() => setIsModalOpen(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
         >
           Adicionar Jogador Casual
@@ -287,11 +347,22 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {times.map((time, index) => (
             <div key={index} className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 transition-colors duration-300">
-              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Time {index + 1}</h3>
+              <div className="flex flex-col mb-2">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Time {index + 1}</h3>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Total: {calcularValorTotalTime(time)} pontos
+                  </span>
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                  <div>Peso do time: {avaliacaoTimes[index]?.peso?.toFixed(1) || '0.0'}</div>
+                  <div>Complementaridade: {avaliacaoTimes[index]?.complementaridade?.toFixed(1) || '0.0'}</div>
+                </div>
+              </div>
               <ul className="text-gray-800 dark:text-gray-300">
                 {time.map((jogador) => (
                   <li key={jogador.id} className="flex justify-between items-center">
-                    <span>{jogador.nome}</span>
+                    <span>{jogador.nome} ({calcularPeso(jogador).toFixed(1)} pts)</span>
                     {jogador.casual && (
                       <button
                         onClick={() => handleRemovePlayer(jogador)}
@@ -322,7 +393,7 @@ const DivisaoTimes: React.FC<DivisaoTimesProps> = ({ jogadores }) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Jogador Casual Encontrado</AlertDialogTitle>
             <AlertDialogDescription>
-              Deseja remover o jogador casual {jogadorCasual?.nome} da lista?
+              Deseja remover o jogador casual &quot;{jogadorCasual?.nome}&quot; da lista?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

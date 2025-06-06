@@ -1,10 +1,12 @@
 export interface Jogador {
   id: string;
   nome: string;
+  casual: boolean;
+  estrelas: number;
+  votos: Array<{ userId: string; vote: number }>;
   media: number;
-  assistencias: number;
-  excluirDaVotacao: boolean;
   gols: number;
-  votos: { userId: string; vote: number }[];
-  casual?: boolean;
+  assistencias: number;
+  createdAt: string;
+  excluirDaVotacao?: boolean;
 }
